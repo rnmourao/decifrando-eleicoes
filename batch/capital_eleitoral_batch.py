@@ -5,6 +5,7 @@ from pyspark.sql.session import SparkSession
 sc = SparkContext('local','example')
 spark = SparkSession(sc)
 
+# pasta onde se encontram arquivos csv de entrada
 mypath = '/media/mourao/BACKUP/eleicoes/'
 
 # ler multiplos arquivos de candidatos extraidos do site

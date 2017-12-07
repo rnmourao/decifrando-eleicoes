@@ -76,7 +76,7 @@ layout = html.Div([
                html.Div([
                          dcc.Checklist(options=cargos, values=[CARGO.DEPUTADO_FEDERAL], id='cargos'),
                          dcc.RadioItems(options=visao, value='Estado', id='visao'),
-                         dcc.Checklist(options=ufs, values=[], id='check-visao')
+                         dcc.Checklist(options=ufs, values=['SP'], id='check-visao')
                        ], id='head'),
                html.Div([
                          dcc.Graph(id='bolhas'),
@@ -97,7 +97,10 @@ layout = html.Div([
 @app.callback(Output('check-visao', 'values'),
               [Input('visao', 'value')])
 def limpa_valores(visao):
-    return []
+    if visao == 'Estado':
+        return ['SP']
+    else:
+        return ['PMDB']
 
 @app.callback(Output('check-visao', 'options'),
               [Input('visao', 'value')])
@@ -108,11 +111,11 @@ def atualiza_opcoes(visao):
         return partidos
 
 @app.callback(Output('bolhas', 'figure'),
-              [Input('passador', 'value')],
-              [State('cargos', 'values'),
-               State('check-visao', 'values'),
-               State('visao', 'value')])
-def atualiza_pelo_passador(ano, cargos, opcoes, visao):
+              [Input('passador', 'value'),
+               Input('visao', 'value'),
+               Input('cargos', 'values'),
+               Input('check-visao', 'values')])
+def atualiza_pelo_passador(ano, visao, cargos, opcoes):
     if visao == 'Estado':
         return grafico_por_estado(ano, cargos, opcoes)
     else:

@@ -4,11 +4,15 @@ from pyspark.sql.session import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
 from datetime import datetime
+
+import sys
+sys.path.append('..')
 from cepesp import *
 
 sc = SparkContext('local','example')
 spark = SparkSession(sc)
 
+# pasta onde se encontram arquivos csv de entrada
 mypath = '/media/mourao/BACKUP/eleicoes/'
 
 # ler multiplos arquivos de votacao por secao extraidos do site

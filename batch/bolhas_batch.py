@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-from cepesp import *
 import pandas as pd
 import numpy as np
+
+import sys
+sys.path.append('..')
+from cepesp import *
 
 cargos = [CARGO.PRESIDENTE,
           CARGO.GOVERNADOR,
