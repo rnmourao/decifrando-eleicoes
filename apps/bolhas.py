@@ -90,7 +90,8 @@ layout = html.Div([
                                    html.Button('>', id='play'),
                                    html.Button('II', id='pause', hidden=True)
                                   ])
-                        ], id='body', style={'width': '80%', 'position': 'fixed', 'top': '50%', 'left': '50%', 'transform': 'translate(-50%, -50%)'}),
+                        ], id='body'),
+                        # , style={'width': '80%', 'position': 'fixed', 'top': '50%', 'left': '50%', 'transform': 'translate(-50%, -50%)'}
                dcc.Interval(id='intervalo', interval=PARADO)
               ])
 
