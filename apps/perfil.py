@@ -44,7 +44,21 @@ ufs = [
 {'label': 'Tocantins', 'value': 'TO'}]
 
 # recuperar arquivo com dados dos deputados
-deputados = pd.read_csv('data/centis_deputados_federais_2014.csv')
+centis = pd.read_csv('data/centis_deputados_federais_2014.csv')
+
+## recuperar deputados federais com votos mais expressivos
+# contar eleitos por uf, multiplicando por 5
+por_uf = centis[(centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') | (centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')].groupby('SIGLA_UE').size().reset_index(name='QTDE_ELEITOS')
+por_uf['TAMANHO'] = por_uf['QTDE_ELEITOS'] * 5
+
+# ordenar por uf e quantidade de votos
+centis = centis.sort_values(by=['SIGLA_UE', 'QTDE_VOTOS'], ascending=[True, False])
+
+# selecionar grupo
+expressivos = pd.DataFrame()
+for i, u in por_uf.iterrows():
+    expressivos = pd.concat([expressivos, centis[centis['SIGLA_UE'] == u['SIGLA_UE']].head(u['TAMANHO'])])
+
 
 layout = html.Div([
                html.Div([
@@ -62,7 +76,7 @@ def limpa_combo_candidatos(uf):
 @app.callback(Output('combo-candidatos', 'options'),
               [Input('combo-ufs', 'value')])
 def preenche_combo_candidatos(uf):
-    candidatos = deputados[deputados['SIGLA_UE'] == uf].sort_values(by='NOME_URNA_CANDIDATO')
+    candidatos = centis[centis['SIGLA_UE'] == uf].sort_values(by='NOME_URNA_CANDIDATO')
     return [{'label': c['NOME_URNA_CANDIDATO'], 'value': c['CPF_CANDIDATO']} for i, c in candidatos.iterrows()]
 
 @app.callback(Output('pf-body', 'children'),
@@ -71,7 +85,7 @@ def preenche_perfil(cpf):
     if not cpf:
         return []
 
-    candidato = deputados[deputados['CPF_CANDIDATO'] == cpf]
+    candidato = centis[centis['CPF_CANDIDATO'] == cpf]
     nome = candidato['NOME_URNA_CANDIDATO']
     partido = candidato['SIGLA_PARTIDO']
     coligacao = candidato['NOME_COLIGACAO']
@@ -86,21 +100,19 @@ def preenche_perfil(cpf):
                         html.P(profissao),
                         html.P(eleito)])
 
+#   identificar candidatos com votacao expressiva que sao similares ao candidato selecionado
     centil = candidato['CENTIL'].iloc[0]
-    similares = deputados.sort_values(by='CENTIL')
-    similares = similares.reset_index(drop=True)
-    pos = similares.index[similares['CENTIL'] == centil][0]
-
-    indices = [i for i in range(pos-3, pos+4) if i >= 0 and i < len(deputados) ]
-    indices.remove(pos)
-    similares = similares.loc[indices]
+    similares = expressivos[expressivos['CPF_CANDIDATO'] != cpf]
+    similares['DIFERENCA'] = abs(similares['CENTIL'] - centil)
+    similares = similares.sort_values(by='DIFERENCA').head(6)
+    similares = similares.sort_values(by='QTDE_VOTOS', ascending=False)
 
     dados_similares = html.Table(
         # Header
-        [html.Tr([html.Td('Nome'), html.Td('Partido'), html.Td('Estado')])] +
+        [html.Tr([html.Td('Nome'), html.Td('Partido'), html.Td('Estado'), html.Td('Quantidade de Votos')])] +
 
         # pf-body
-        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td(s['SIGLA_PARTIDO']), html.Td(s['DESCRICAO_UE'])]) for i, s in similares.iterrows()]
+        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td(s['SIGLA_PARTIDO']), html.Td(s['DESCRICAO_UE']), html.Td(s['QTDE_VOTOS'])]) for i, s in similares.iterrows()]
     )
 
     return html.Div([dados_candidato, dados_similares])

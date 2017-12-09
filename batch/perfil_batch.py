@@ -3,7 +3,6 @@ from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
-from datetime import datetime
 
 import sys
 sys.path.append('..')
@@ -93,7 +92,7 @@ df_zona = spark.sql('''
  ''')
 df_zona.createOrReplaceTempView("tab_zona")
 
-# soma votos por candidato
+# quantidadte total de votos por candidato. recupera maximo do cumsum.
 df_total_votos = spark.sql('''
                     SELECT uf
                          , candidato
@@ -135,7 +134,8 @@ zonas_centil.createOrReplaceTempView("tab_zonas_centil")
 df_centil = spark.sql('''
                     SELECT a.uf
                          , a.candidato
-                         , (a.votos_acumulados / float(a.total_votos)) as centil
+                         , (a.votos_acumulados / float(a.total_votos)) as CENTIL
+                         , a.total_votos AS QTDE_VOTOS
                     FROM tab_zona a
                        , tab_zonas_centil b
                     where a.uf = b.uf
@@ -148,11 +148,10 @@ centis = df_centil.toPandas()
 
 # recuperar todos deputados federais de 2014
 deputados = candidatos(cargo=CARGO.DEPUTADO_FEDERAL, ano=2014)
-deputados['NUMERO_CANDIDATO'] = pd.to_numeric(deputados['NUMERO_CANDIDATO'], errors='coerce')
+# deputados['NUMERO_CANDIDATO'] = pd.to_numeric(deputados['NUMERO_CANDIDATO'], errors='coerce')
 
 # efetuar merge dos dois dataframes
 deputados = pd.merge(deputados, centis, left_on=['SIGLA_UF', 'NUMERO_CANDIDATO'], right_on=['uf', 'candidato'], how='inner')
-deputados['CENTIL'] = deputados['centil']
 
 deputados = deputados[['ANO_ELEICAO',
                        'SIGLA_UE',
@@ -173,6 +172,7 @@ deputados = deputados[['ANO_ELEICAO',
                        'NOME_MUNICIPIO_NASCIMENTO',
                        'DESPESA_MAX_CAMPANHA',
                        'DESC_SIT_TOT_TURNO',
-                       'CENTIL']]
+                       'CENTIL',
+                       'QTDE_VOTOS']]
 
 deputados.to_csv('../data/centis_deputados_federais_2014.csv', index=False)
