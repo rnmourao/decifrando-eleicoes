@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Fri Dec 08 23:29:03 BRST 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0160-38e3-d49a-00000bd597f0 
-on database directory /home/mourao/decifrando-eleicoes/batch/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@1be9ea13 
+Sat Dec 09 10:12:34 BRST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0160-3b30-fe59-00001a665a50 
+on database directory /home/mourao/decifrando-eleicoes/batch/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@4c108bd3 
 Loaded from file:/usr/local/lib/python2.7/dist-packages/pyspark/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_151-8u151-b12-0ubuntu0.16.04.2-b12

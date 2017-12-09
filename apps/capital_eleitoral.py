@@ -4,11 +4,13 @@ from dash.dependencies import Input, Output, State, Event
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-from cepesp import *
 import numpy as np
 import pandas as pd
+import locale
 
 from app import app
+
+locale.setlocale(locale.LC_ALL, 'pt_BR.utf8')
 
 print('entrou capital eleitoral')
 
@@ -61,13 +63,14 @@ def preenche_capital_eleitoral(uf):
     deputados_uf = deputados[deputados['SIGLA_UF'] == uf]
     deputados_uf = deputados_uf.sort_values(by='TARGET', ascending=False)
     deputados_uf = deputados_uf.reset_index(drop=True)
+    print(deputados_uf.dtypes)
 
     dados_deputados_uf = html.Table(
         # Header
-        [html.Tr([html.Td('Nome'), html.Td('Percentual Esperado do QE')])] +
+        [html.Tr([html.Td('Nome'), html.Td('Quociente Eleitoral Atingido 2014'), html.Td('Quociente Eleitoral Esperado 2018')])] +
 
         # Body
-        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td(s['TARGET'])]) for i, s in deputados_uf.iterrows()]
+        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td('{:.2f}'.format(100 * s['PERC_QE'])), html.Td('{:.2f}'.format(100 * s['TARGET']))]) for i, s in deputados_uf.iterrows()]
     )
 
     return html.Div(dados_deputados_uf)

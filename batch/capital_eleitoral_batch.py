@@ -315,6 +315,7 @@ candidatos_estado.createOrReplaceTempView("T_CE")
 up14 = spark.sql("""
     SELECT A.*
          , B.QTDE_ELEITOS / FLOAT(C.QTDE_CANDIDATOS) AS PERC_ELEITOS_UF
+         , C.QTDE_CANDIDATOS AS QTDE_ESTADUAIS
     FROM T_UP      A
        , T_EE      B
        , T_CE      C
@@ -373,6 +374,20 @@ eleitos_estado = spark.sql("""
     GROUP BY SIGLA_UF
 """)
 eleitos_estado.createOrReplaceTempView("T_EE")
+
+# calcular a quantidade de candidatos a deputado federal em 2010
+up14 = spark.sql("""
+    SELECT A.*
+         , B.QTDE_FEDERAIS
+    FROM T_UP A
+       , ( SELECT _c5 AS SIGLA_UF
+                , COUNT(*) AS QTDE_FEDERAIS
+           FROM T_CAND10
+           WHERE _c9 = 'DEPUTADO FEDERAL'
+           GROUP BY _c5) B
+   WHERE A.SIGLA_UF = B.SIGLA_UF
+""")
+up14.createOrReplaceTempView("T_UP")
 
 # quociente eleitoral 2014
 quociente = spark.sql("""
@@ -515,6 +530,7 @@ up18.createOrReplaceTempView("T_UP")
 up18 = spark.sql("""
     SELECT SIGLA_UF
          , NOME_URNA_CANDIDATO
+         , PERC_QE
          , (-0.0025 * IDADE_ESTADUAL + 0.9289 * PERC_QE + 0.116 ) AS TARGET
     FROM T_UP
 """)
@@ -524,6 +540,7 @@ up18.createOrReplaceTempView("T_UP")
 up18 = spark.sql("""
     SELECT SIGLA_UF
          , NOME_URNA_CANDIDATO
+         , PERC_QE
          , CASE WHEN TARGET < 0
                THEN 0
                ELSE TARGET
