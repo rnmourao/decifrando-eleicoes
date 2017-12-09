@@ -134,23 +134,30 @@ def grafico_por_estado(ano, cargos, ufs):
 
     mini_cargo = mini_cargo.groupby(['SIGLA_PARTIDO'], as_index=False).agg({'QTDE_VOTOS': np.sum, 'QTDE_ELEITOS': np.sum, 'QTDE_CANDIDATOS': np.sum})
 
+    # totais para normalizacao
     total_votos = mini_cargo['QTDE_VOTOS'].sum()
-    # total_eleitos = mini_cargo['QTDE_ELEITOS'].sum()
+    total_eleitos = mini_cargo['QTDE_ELEITOS'].sum()
+    total_candidatos = mini_cargo['QTDE_CANDIDATOS'].sum()
 
     # montar dados para cada partido
     tracos = []
     for p in mini_cargo['SIGLA_PARTIDO'].unique():
         mini_partido = mini_cargo[mini_cargo['SIGLA_PARTIDO'] == p]
-        perc_votos = mini_partido['QTDE_VOTOS'] / float(total_votos)
+
+        perc_votos = 100 * mini_partido['QTDE_VOTOS'] / float(total_votos)
+        perc_eleitos = 100 * mini_partido['QTDE_ELEITOS'] / float(total_eleitos)
+        perc_candidatos = 100 * mini_partido['QTDE_CANDIDATOS'] / float(total_candidatos)
 
         tracos.append(go.Scatter(
-            x=mini_partido['QTDE_CANDIDATOS'],
-            y=mini_partido['QTDE_ELEITOS'],
-            text=str(mini_partido['QTDE_VOTOS'].values[0]) + " votos",
+            x=perc_candidatos,
+            y=perc_eleitos,
+            text=str(mini_partido['QTDE_VOTOS'].values[0]) + " votos" + '<br>' +
+                 str(mini_partido['QTDE_CANDIDATOS'].values[0]) + " candidatos" + '<br>' +
+                 str(int(mini_partido['QTDE_ELEITOS'].values[0])) + " eleitos",
             mode='markers',
             opacity=0.7,
             marker={
-                'size': 100 * perc_votos + 15,
+                'size': perc_votos + 15,
                 'line': {'width': 0.5, 'color': 'white'}
             },
             name=p
@@ -158,8 +165,8 @@ def grafico_por_estado(ano, cargos, ufs):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Número de Candidatos', 'autorange': 'reversed'},
-            yaxis={'title': 'Número de Eleitos', 'autorange': 'True'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
+            yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},
             hovermode='closest'
@@ -178,23 +185,30 @@ def grafico_por_partido(ano, cargos, partidos):
 
     mini_cargo = mini_cargo.groupby(['UF'], as_index=False).agg({'QTDE_VOTOS': np.sum, 'QTDE_ELEITOS': np.sum, 'QTDE_CANDIDATOS': np.sum})
 
+    # totais para normalizacao
     total_votos = mini_cargo['QTDE_VOTOS'].sum()
-    # total_eleitos = mini_cargo['QTDE_ELEITOS'].sum()
+    total_eleitos = mini_cargo['QTDE_ELEITOS'].sum()
+    total_candidatos = mini_cargo['QTDE_CANDIDATOS'].sum()
 
     # montar dados para cada partido
     tracos = []
     for uf in mini_cargo['UF'].unique():
         mini_uf = mini_cargo[mini_cargo['UF'] == uf]
-        perc_votos = mini_uf['QTDE_VOTOS'] / float(total_votos)
+
+        perc_votos = 100 * mini_uf['QTDE_VOTOS'] / float(total_votos)
+        perc_eleitos = 100 * mini_uf['QTDE_ELEITOS'] / float(total_eleitos)
+        perc_candidatos = 100 * mini_uf['QTDE_CANDIDATOS'] / float(total_candidatos)
 
         tracos.append(go.Scatter(
-            x=mini_uf['QTDE_CANDIDATOS'],
-            y=mini_uf['QTDE_ELEITOS'],
-            text=str(mini_uf['QTDE_VOTOS'].values[0]) + " votos",
+            x=perc_candidatos,
+            y=perc_eleitos,
+            text=str(mini_uf['QTDE_VOTOS'].values[0]) + " votos" + '<br>' +
+                 str(mini_uf['QTDE_CANDIDATOS'].values[0]) + " candidatos" + '<br>' +
+                 str(int(mini_uf['QTDE_ELEITOS'].values[0])) + " eleitos",
             mode='markers',
             opacity=0.7,
             marker={
-                'size': 100 * perc_votos + 15,
+                'size': perc_votos + 15,
                 'line': {'width': 0.5, 'color': 'white'}
             },
             name=uf
@@ -202,8 +216,8 @@ def grafico_por_partido(ano, cargos, partidos):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Número de Candidatos', 'autorange': 'reversed'},
-            yaxis={'title': 'Número de Eleitos', 'autorange': 'True'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
+            yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},
             hovermode='closest'
