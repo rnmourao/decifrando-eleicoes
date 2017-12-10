@@ -22,8 +22,12 @@ cargo = {
 
 }
 
-perfil = {
-
+tabela = {
+          'table'  : {'border-collapse': 'colapse'},
+          'td'     : {'border': '1px solid #dddddd', 'padding': '8px'},
+          'td-num' : {'border': '1px solid #dddddd', 'padding': '8px', 'text-align': 'center'},
+          'escuro' : {'background-color': '#dddddd'},
+          'claro'  : {'background-color': '#ffffff'}
 }
 
 #   <style type="text/css">

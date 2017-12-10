@@ -530,6 +530,7 @@ up18.createOrReplaceTempView("T_UP")
 up18 = spark.sql("""
     SELECT SIGLA_UF
          , NOME_URNA_CANDIDATO
+         , VOTOS_ESTADUAL
          , PERC_QE
          , (-0.0025 * IDADE_ESTADUAL + 0.9289 * PERC_QE + 0.116 ) AS TARGET
     FROM T_UP
@@ -540,6 +541,7 @@ up18.createOrReplaceTempView("T_UP")
 up18 = spark.sql("""
     SELECT SIGLA_UF
          , NOME_URNA_CANDIDATO
+         , VOTOS_ESTADUAL
          , PERC_QE
          , CASE WHEN TARGET < 0
                THEN 0

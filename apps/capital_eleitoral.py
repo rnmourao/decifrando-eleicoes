@@ -11,6 +11,9 @@ from app import app
 
 print('entrou capital eleitoral')
 
+# razao entre a populacao brasileira em 2018 e 2014
+projecao = 1.0205680705
+
 ufs = [
 # {'label': 'Brasil', 'value': 'BR'},
 {'label': 'Acre', 'value': 'AC'},

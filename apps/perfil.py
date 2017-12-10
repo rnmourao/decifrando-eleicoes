@@ -7,9 +7,11 @@ import plotly.graph_objs as go
 from cepesp import *
 import numpy as np
 import pandas as pd
+import css
 # import difflib as dl
 
 from app import app
+
 
 print('entrou perfil')
 
@@ -105,14 +107,23 @@ def preenche_perfil(cpf):
     similares = expressivos[expressivos['CPF_CANDIDATO'] != cpf]
     similares['DIFERENCA'] = abs(similares['CENTIL'] - centil)
     similares = similares.sort_values(by='DIFERENCA').head(6)
-    similares = similares.sort_values(by='QTDE_VOTOS', ascending=False)
+    similares = similares.sort_values(by='QTDE_VOTOS', ascending=False).reset_index(drop=True)
 
-    dados_similares = html.Table(
-        # Header
-        [html.Tr([html.Td('Nome'), html.Td('Partido'), html.Td('Estado'), html.Td('Quantidade de Votos')])] +
-
-        # pf-body
-        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td(s['SIGLA_PARTIDO']), html.Td(s['DESCRICAO_UE']), html.Td(s['QTDE_VOTOS'])]) for i, s in similares.iterrows()]
-    )
+    dados_similares = [html.Tr([html.Th('Nome', style=css.tabela['td']),
+                                html.Th('Partido', style=css.tabela['td']),
+                                html.Th('Estado', style=css.tabela['td']),
+                                html.Th('Quantidade de Votos', style=css.tabela['td']),
+                                html.Th('Último Resultado', style=css.tabela['td'])])]
+    for i, s in similares.iterrows():
+        if i % 2 == 0:
+            cor = 'escuro'
+        else:
+            cor = 'claro'
+        dados_similares += [html.Tr([html.Td(s['NOME_URNA_CANDIDATO'], style=css.tabela['td']),
+                                     html.Td(s['SIGLA_PARTIDO'], style=css.tabela['td']),
+                                     html.Td(s['DESCRICAO_UE'], style=css.tabela['td']),
+                                     html.Td(s['QTDE_VOTOS'], style=css.tabela['td-num']),
+                                     html.Td(s['DESC_SIT_TOT_TURNO'], style=css.tabela['td'])], style=css.tabela[cor])]
+    dados_similares = html.Table(dados_similares, style=css.tabela['table'])
 
     return html.Div([dados_candidato, dados_similares])
