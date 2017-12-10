@@ -6,6 +6,7 @@ import dash_html_components as html
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
+import css
 
 from app import app
 
@@ -60,16 +61,22 @@ def preenche_capital_eleitoral(uf):
     if not uf:
         return []
 
+
     deputados_uf = deputados[deputados['SIGLA_UF'] == uf]
     deputados_uf = deputados_uf.sort_values(by='TARGET', ascending=False)
     deputados_uf = deputados_uf.reset_index(drop=True)
 
-    dados_deputados_uf = html.Table(
-        # Header
-        [html.Tr([html.Td('Nome'), html.Td('Quociente Eleitoral Atingido 2014'), html.Td('Quociente Eleitoral Esperado 2018')])] +
-
-        # Body
-        [html.Tr([html.Td(s['NOME_URNA_CANDIDATO']), html.Td('{:.2f}'.format(100 * s['PERC_QE']).replace('.', ',')), html.Td('{:.2f}'.format(100 * s['TARGET']).replace('.', ','))]) for i, s in deputados_uf.iterrows()]
-    )
+    dados_deputados_uf = [html.Tr([html.Th('Nome', style=css.tabela['td']),
+                                   html.Th('Votos Estadual (2014)', style=css.tabela['td']),
+                                   html.Th('Projeção Votos Federal (2018)', style=css.tabela['td'])])]
+    for i, s in deputados_uf.iterrows():
+        if i % 2 == 0:
+            cor = 'escuro'
+        else:
+            cor = 'claro'
+        dados_deputados_uf += [html.Tr([html.Td(s['NOME_URNA_CANDIDATO'], style=css.tabela['td']),
+                                        html.Td(s['VOTOS_ESTADUAL'], style=css.tabela['td-num']),
+                                        html.Td(int((s['VOTOS_ESTADUAL'] * s['TARGET'] / s['PERC_QE']) * projecao), style=css.tabela['td-num'])], style=css.tabela[cor])]
+    dados_deputados_uf = html.Table(dados_deputados_uf, style=css.tabela['table'])
 
     return html.Div(dados_deputados_uf)
