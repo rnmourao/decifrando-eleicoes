@@ -48,6 +48,9 @@ ufs = [
 # recuperar arquivo com dados dos deputados
 deputados = pd.read_csv('data/capital_eleitoral_2018.csv')
 
+# recuperar informacoes sobre federais em 2014
+qe_uf = pd.read_csv('data/qe_federal_2014.csv')
+
 layout = html.Div([
                html.Div([
                          dcc.Dropdown(options=ufs, id='combo-ufs')
@@ -61,6 +64,7 @@ def preenche_capital_eleitoral(uf):
     if not uf:
         return []
 
+    qe = qe_uf['QUOCIENTE_ELEITORAL'][qe_uf['SIGLA_UF'] == uf].iloc[0]
 
     deputados_uf = deputados[deputados['SIGLA_UF'] == uf]
     deputados_uf = deputados_uf.sort_values(by='TARGET', ascending=False)
@@ -76,7 +80,7 @@ def preenche_capital_eleitoral(uf):
             cor = 'claro'
         dados_deputados_uf += [html.Tr([html.Td(s['NOME_URNA_CANDIDATO'], style=css.tabela['td']),
                                         html.Td(s['VOTOS_ESTADUAL'], style=css.tabela['td-num']),
-                                        html.Td(int((s['VOTOS_ESTADUAL'] * s['TARGET'] / s['PERC_QE']) * projecao), style=css.tabela['td-num'])], style=css.tabela[cor])]
+                                        html.Td(int(qe * s['TARGET'] * projecao), style=css.tabela['td-num'])], style=css.tabela[cor])]
     dados_deputados_uf = html.Table(dados_deputados_uf, style=css.tabela['table'])
 
     return html.Div(dados_deputados_uf)

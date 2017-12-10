@@ -392,12 +392,15 @@ up14.createOrReplaceTempView("T_UP")
 # quociente eleitoral 2014
 quociente = spark.sql("""
     SELECT A.SIGLA_UF
+         , A.TOTAL_VOTOS_UF AS TOTAL_VOTOS
          , CAST(A.TOTAL_VOTOS_UF / FLOAT(B.QTDE_ELEITOS) AS INTEGER) AS QUOCIENTE_ELEITORAL
     FROM T_VE A
        , T_EE B
     WHERE A.SIGLA_UF = B.SIGLA_UF
 """)
 quociente.createOrReplaceTempView("T_QE")
+
+quociente.toPandas().to_csv('../data/qe_federal_2014.csv', index=False, encoding='utf-8')
 
 # calcular o percentual de votos do candidato frente o quociente eleitoral em 2014
 up14 = spark.sql("""
