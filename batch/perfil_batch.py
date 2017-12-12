@@ -4,6 +4,10 @@ from pyspark.sql.session import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
 
+from matplotlib import pyplot as plt
+from scipy.cluster.hierarchy import dendrogram, linkage
+import numpy as np
+
 import sys
 sys.path.append('..')
 from cepesp import *
@@ -162,6 +166,7 @@ deputados = deputados[['ANO_ELEICAO',
                        'DESCRICAO_CARGO',
                        'SIGLA_PARTIDO',
                        'NOME_COLIGACAO',
+                       'COMPOSICAO_LEGENDA',                       
                        'DESCRICAO_OCUPACAO',
                        'IDADE_DATA_ELEICAO',
                        'DESCRICAO_SEXO',
@@ -174,5 +179,10 @@ deputados = deputados[['ANO_ELEICAO',
                        'DESC_SIT_TOT_TURNO',
                        'CENTIL',
                        'QTDE_VOTOS']]
+
+
+# classificar por centil
+
+
 
 deputados.to_csv('../data/centis_deputados_federais_2014.csv', index=False)

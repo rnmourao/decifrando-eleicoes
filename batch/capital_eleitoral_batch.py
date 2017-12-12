@@ -468,20 +468,7 @@ de14 = spark.sql("""
       AND A.CODIGO_CARGO     = B.CODIGO_CARGO
       AND A.NUMERO_CANDIDATO = B.NUMERO_CANDIDATO
 """)
-de14.createOrReplaceTempView("T_DE14")
-
-# criar tabela up18
-
-# identifica nos arquivos candidatos a estadual/distrital em 2010 que foram
-# candidatos a deputado federal em 2014. Criar dataframe com esses candidatos.
-up18 = spark.sql("""
-    SELECT SIGLA_UF
-         , NOME_URNA_CANDIDATO
-         , IDADE_DATA_ELEICAO        AS IDADE_ESTADUAL
-         , QTDE_VOTOS                AS VOTOS_ESTADUAL
-    FROM T_DE14
-""")
-up18.createOrReplaceTempView("T_UP")
+de14.createOrReplaceTempView("T_UP")
 
 ## incluir percentual de votos que o candidato obteve em 2010 em comparação ao total de votos do estado
 votos_estado = spark.sql("""
@@ -522,7 +509,7 @@ quociente.createOrReplaceTempView("T_QE")
 # calcular o percentual de votos do candidato frente o quociente eleitoral em 2014
 up18 = spark.sql("""
     SELECT A.*
-         , A.VOTOS_ESTADUAL / FLOAT(B.QUOCIENTE_ELEITORAL) AS PERC_QE
+         , A.QTDE_VOTOS / FLOAT(B.QUOCIENTE_ELEITORAL) AS PERC_QE
     FROM T_UP      A
        , T_QE      B
     WHERE A.SIGLA_UF = B.SIGLA_UF
@@ -531,21 +518,15 @@ up18.createOrReplaceTempView("T_UP")
 
 # montar saida
 up18 = spark.sql("""
-    SELECT SIGLA_UF
-         , NOME_URNA_CANDIDATO
-         , VOTOS_ESTADUAL
-         , PERC_QE
-         , (-0.0025 * IDADE_ESTADUAL + 0.9289 * PERC_QE + 0.116 ) AS TARGET
+    SELECT *
+         , (-0.0025 * IDADE_DATA_ELEICAO + 0.9289 * PERC_QE + 0.116 ) AS TARGET
     FROM T_UP
 """)
 up18.createOrReplaceTempView("T_UP")
 
 # retirar negativos
 up18 = spark.sql("""
-    SELECT SIGLA_UF
-         , NOME_URNA_CANDIDATO
-         , VOTOS_ESTADUAL
-         , PERC_QE
+    SELECT *
          , CASE WHEN TARGET < 0
                THEN 0
                ELSE TARGET

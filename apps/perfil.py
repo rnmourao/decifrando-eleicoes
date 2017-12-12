@@ -64,30 +64,65 @@ for i, u in por_uf.iterrows():
 
 layout = html.Div([
                html.Div([
-                         dcc.Dropdown(options=ufs, id='combo-ufs'),
-                         dcc.Dropdown(options=[], id='combo-candidatos')
+                         dcc.Dropdown(options=ufs, id='perfil-combo-ufs'),
+                         dcc.Dropdown(options=[], id='perfil-combo-candidatos')
                        ], id='head'),
                html.Div(id='pf-body')
               ])
 
-@app.callback(Output('combo-candidatos', 'value'),
-              [Input('combo-ufs', 'value')])
+@app.callback(Output('perfil-combo-candidatos', 'value'),
+              [Input('perfil-combo-ufs', 'value')])
 def limpa_combo_candidatos(uf):
     return []
 
-@app.callback(Output('combo-candidatos', 'options'),
-              [Input('combo-ufs', 'value')])
+@app.callback(Output('perfil-combo-candidatos', 'options'),
+              [Input('perfil-combo-ufs', 'value')])
 def preenche_combo_candidatos(uf):
     candidatos = centis[centis['SIGLA_UE'] == uf].sort_values(by='NOME_URNA_CANDIDATO')
     return [{'label': c['NOME_URNA_CANDIDATO'], 'value': c['CPF_CANDIDATO']} for i, c in candidatos.iterrows()]
 
 @app.callback(Output('pf-body', 'children'),
-              [Input('combo-candidatos', 'value')])
+              [Input('perfil-combo-candidatos', 'value')])
 def preenche_perfil(cpf):
+    leiaute = []
+
     if not cpf:
-        return []
+        return leiaute
 
     candidato = centis[centis['CPF_CANDIDATO'] == cpf]
+
+    resultado = card_candidato_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = card_resumo_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = card_menos_votado_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = card_mais_votado_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = pizza_eleitos_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = barra_resultado_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    resultado = tabela_similares_perfil(candidato)
+    if resultado:
+        leiaute.append(resultado)
+
+    return leiaute
+
+
+def card_candidato_perfil(candidato):
     nome = candidato['NOME_URNA_CANDIDATO']
     partido = candidato['SIGLA_PARTIDO']
     coligacao = candidato['NOME_COLIGACAO']
@@ -95,13 +130,35 @@ def preenche_perfil(cpf):
     natural = "Natural de " + candidato['NOME_MUNICIPIO_NASCIMENTO'] + " (" + candidato['SIGLA_UF_NASCIMENTO'] + ")"
     profissao = candidato['DESCRICAO_OCUPACAO']
     eleito = candidato['DESC_SIT_TOT_TURNO']
-    dados_candidato =  html.Div([html.H2(nome + " (" + partido + ")"),
-                        html.H3(coligacao),
-                        html.P(idade),
-                        html.P(natural),
-                        html.P(profissao),
-                        html.P(eleito)])
+    return html.Div([html.H2(nome + " (" + partido + ")"),
+                     html.H3(coligacao),
+                     html.P(idade),
+                     html.P(natural),
+                     html.P(profissao),
+                     html.P(eleito)])
 
+
+def card_resumo_perfil(candidato):
+    return
+
+
+def card_menos_votado_perfil(candidato):
+    return
+
+
+def card_mais_votado_perfil(candidato):
+    return
+
+
+def pizza_eleitos_perfil(candidato):
+    return
+
+
+def barra_resultado_perfil(candidato):
+    return
+
+
+def tabela_similares_perfil(candidato):
 #   identificar candidatos com votacao expressiva que sao similares ao candidato selecionado
     centil = candidato['CENTIL'].iloc[0]
     similares = expressivos[expressivos['CPF_CANDIDATO'] != cpf]
@@ -124,6 +181,5 @@ def preenche_perfil(cpf):
                                      html.Td(s['DESCRICAO_UE'], style=css.tabela['td']),
                                      html.Td(s['QTDE_VOTOS'], style=css.tabela['td-num']),
                                      html.Td(s['DESC_SIT_TOT_TURNO'], style=css.tabela['td'])], style=css.tabela[cor])]
-    dados_similares = html.Table(dados_similares, style=css.tabela['table'])
 
-    return html.Div([dados_candidato, dados_similares])
+    return html.Table(dados_similares, style=css.tabela['table'])

@@ -8,6 +8,7 @@ from cepesp import *
 import numpy as np
 import pandas as pd
 import datetime as dt
+import css
 
 from app import app
 
@@ -28,20 +29,20 @@ partidos.sort()
 checks = [{'label': p, 'value': p} for p in partidos]
 
 layout = html.Div([
-                html.Div(id='resultado', style={'display': 'block'}),
+                html.H1('Tempo Disponível em Programas de Rádio e TV'),
                 html.Div([
                             html.Div([
                                       html.H2('Quais partidos participarão desta eleição?'),
-                                      dcc.Checklist(options=checks, values=partidos,
-                                                    labelStyle={'display': 'inline-block'}, id='participantes'),
+                                      dcc.Checklist(options=checks, values=partidos, id='participantes', style=css.checkbox),
                                       dcc.Checklist(options=[{'label': 'Todos', 'value': 'Todos'}], values=['Todos'], id='todos-participantes')
-                                     ], style={'flex': '0 0 50%'}),
+                                     ], style={'float' : 'left'}),
                             html.Div([
                                       html.H2('Monte a coligação:'),
-                                      dcc.Checklist(options=checks, values=[],
-                                                    labelStyle={'display': 'inline-block'}, id='coligacao')
-                                     ], style={'flex': '1'}),
-                         ], style={'display': 'flex'})
+                                      dcc.Checklist(options=checks, values=[], id='coligacao', style=css.checkbox)
+                                     ], style={'float' : 'right', 'width' : '40%'}),
+                         ], style={'height' : '150px'}),
+               html.Div(style={'height' : '150px'}),
+               html.Div(id='resultado', style=css.div_centralizada)
               ])
 
 # montar partidos da coligacao
@@ -93,21 +94,45 @@ def efetua_calculo(participantes, coligacao):
     # tempo das insercoes
     ti = np.trunc(calcula_tempo(todos, participantes, coligacao, insercao))
 
-    return [html.H1('Tempo Disponível em Programas de Rádio e TV'),
-            html.H2('Coligação ' + parts),
-            html.P(),
-            html.H2('1º Turno:'),
-            html.P(),
-            html.H2('Tempo Total de Programa por dia: ' + str(dt.timedelta(seconds=(tp_ttl)))),
-            html.H3('Tempo para Presidente:' + str(dt.timedelta(seconds=(tp_pres)))),
-            html.H3('Tempo para Governador:' + str(dt.timedelta(seconds=(tp_gov)))),
-            html.H3('Tempo para Senador (2/3):' + str(dt.timedelta(seconds=(tp_sen)))),
-            html.H3('Tempo para Deputado Federal:' + str(dt.timedelta(seconds=(tp_dep_f)))),
-            html.H3('Tempo para Deputado Estadual:' + str(dt.timedelta(seconds=(tp_dep_e)))),
-            html.P(),
-            html.H2('Para o 2º Turno, Presidente e Governador terão 10 minutos por dia.'),
-            html.P(),
-            html.H2('Tempo Total de Inserções por dia: ' + str(dt.timedelta(seconds=(ti))))]
+    return html.Table([html.Tr([html.Th(html.Br()),
+                                html.Th('Programa', colSpan=5, style=css.tabela['titulo']),
+                                html.Th('Inserção', rowSpan=2, style=css.tabela['titulo'])]),
+                       html.Tr([html.Td(),
+                               html.Td('Presidente', style=css.tabela['titulo']),
+                               html.Td('Governador', style=css.tabela['titulo']),
+                               html.Td('Senador', style=css.tabela['titulo']),
+                               html.Td([html.Span('Deputado'), html.Br(), html.Span('Federal')], style=css.tabela['titulo']),
+                               html.Td([html.Span('Deputado'), html.Br(), html.Span('Estadual')], style=css.tabela['titulo'])]),
+                       html.Tr([html.Td('1º Turno', style=css.tabela['titulo']),
+                               html.Td(str(dt.timedelta(seconds=(tp_pres))), style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(tp_gov))), style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(tp_sen))), style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(tp_dep_f))), style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(tp_dep_e))), style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(ti))), style=css.tabela['td-num'])]),
+                       html.Tr([html.Td('2º Turno', style=css.tabela['titulo']),
+                               html.Td('0:10:00', style=css.tabela['td-num']),
+                               html.Td('0:10:00', style=css.tabela['td-num']),
+                               html.Td('-', style=css.tabela['td-num']),
+                               html.Td('-', style=css.tabela['td-num']),
+                               html.Td('-', style=css.tabela['td-num']),
+                               html.Td(str(dt.timedelta(seconds=(ti))), style=css.tabela['td-num'])])], style=css.tabela['table'])
+
+    # return [html.H1('Tempo Disponível em Programas de Rádio e TV'),
+    #         html.H2('Coligação ' + parts),
+    #         html.P(),
+    #         html.H2('1º Turno:'),
+    #         html.P(),
+    #         html.H2('Tempo Total de Programa por dia: ' + str(dt.timedelta(seconds=(tp_ttl)))),
+    #         html.H3('Tempo para Presidente:' + str(dt.timedelta(seconds=(tp_pres)))),
+    #         html.H3('Tempo para Governador:' + str(dt.timedelta(seconds=(tp_gov)))),
+    #         html.H3('Tempo para Senador (2/3):' + str(dt.timedelta(seconds=(tp_sen)))),
+    #         html.H3('Tempo para Deputado Federal:' + str(dt.timedelta(seconds=(tp_dep_f)))),
+    #         html.H3('Tempo para Deputado Estadual:' + str(dt.timedelta(seconds=(tp_dep_e)))),
+    #         html.P(),
+    #         html.H2('Para o 2º Turno, Presidente e Governador terão 10 minutos por dia.'),
+    #         html.P(),
+    #         html.H2('Tempo Total de Inserções por dia: ' + str(dt.timedelta(seconds=(ti))))]
 
 
 def calcula_tempo(todos, participantes, coligacao, tempo_disponivel, majoritaria=False):
