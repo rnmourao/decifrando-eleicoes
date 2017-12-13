@@ -59,8 +59,12 @@ qe_uf = pd.read_csv('data/qe_federal_2014.csv')
 
 layout = html.Div([
                html.H1('Será que é hora de virar Federal?'),
-               html.Div([html.Div([html.P('Estado: ', style={'width' : '15%'}), html.Div(dcc.Dropdown(options=ufs, id='capital-combo-ufs'), style={'width': '40%'})], style={'display': 'flex'}),
-                         html.Div([html.P('Candidato: ', style={'width' : '15%'}), html.Div(dcc.Dropdown(options=[], id='capital-combo-candidatos'), style={'width': '40%'})], style={'display' : 'flex'})
+               html.H3('Fizemos uma projeção da quantidade de votos que um candidato a Deputado Estadual conseguiria se resolvesse se candidatar a Deputado Federal.', style={'font-style': 'italic'}),
+               html.Div([html.Div([html.P('Estado: ', style={'width' : '15%'}),
+                         html.Div(dcc.Dropdown(options=ufs, id='capital-combo-ufs'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
+
+                         html.Div([html.P('Candidato: ', style={'width' : '15%'}),
+                         html.Div(dcc.Dropdown(options=[], id='capital-combo-candidatos'), style={'width': '40%'})], style={'display' : 'flex', 'align-items': 'center'})
                        ], id='head'),
                html.Div(id='ce-body')
               ])
@@ -141,8 +145,6 @@ def card_candidato_capital(candidato):
 
 def pizza_sucesso_capital(uf):
     resultados = ce_14[ce_14['SIGLA_UF'] == uf]
-    # resultados['RESULTADO_FEDERAL'][(resultados['RESULTADO_FEDERAL'] == 'ELEITO POR QP') | (resultados['RESULTADO_FEDERAL'] == 'ELEITO POR MÉDIA')] = 'ELEITO'
-    # resultados['RESULTADO_FEDERAL'][resultado['RESULTADO_FEDERAL'] != 'ELEITO'] = 'NÃO ELEITO'
 
     grupo = resultados.groupby('RESULTADO_FEDERAL').size().reset_index(name='QUANTIDADE')
 

@@ -7,6 +7,7 @@ import plotly.graph_objs as go
 from cepesp import *
 import numpy as np
 import pandas as pd
+import css
 
 from app import app
 
@@ -73,24 +74,35 @@ ps.sort()
 partidos = [{'label': p, 'value': p} for p in ps]
 
 layout = html.Div([
+               html.H1('Como está a eficiência dos partidos?'),
+               html.H3('Quais partidos elegem mais tendo menos candidatos? Será que a eficiência de um partido é igual em todos os estados?', style={'font-style': 'italic'}),
                html.Div([
-                         dcc.Checklist(options=cargos, values=[CARGO.DEPUTADO_FEDERAL], id='cargos'),
-                         dcc.RadioItems(options=visao, value='Estado', id='visao'),
-                         dcc.Checklist(options=ufs, values=['SP'], id='check-visao')
-                       ], id='head'),
-               html.Div([
-                         dcc.Graph(id='bolhas'),
-                         dcc.Slider(min=np.min(anos),
-                                    max=np.max(anos),
-                                    marks={str(i): str(i) for i in anos},
-                                    value=MENOR_ANO,
-                                    id='passador'),
-                         html.Br(),
                          html.Div([
-                                   html.Button('>', id='play'),
-                                   html.Button('II', id='pause', hidden=True)
-                                  ])
-                        ], id='body'),
+                                     html.Div([html.P('Visão: '),
+                                               dcc.RadioItems(options=visao, value='Estado', id='visao')],
+                                              style={'display': 'flex',
+                                                     'align-items': 'center'}),
+                                     html.Div(dcc.Checklist(options=ufs, values=['SP'], id='check-visao',
+                                                            style=css.checkbox),
+                                              style={'display' : 'flex', 'align-items': 'center'})]),
+
+                         html.Div([html.P('Cargo:'), dcc.Checklist(options=cargos, values=[CARGO.DEPUTADO_FEDERAL],
+                                  id='cargos',)], style={'display' : 'flex', 'align-items': 'center'})
+                       ], id='head', style={'display' : 'flex', 'flex-direction' : 'column'}),
+               html.Div([
+                         dcc.Graph(id='bolhas', style={'height' : '300px'}),
+                         html.Div([
+                                     html.Div([
+                                               html.Button('>', id='play'),
+                                               html.Button('II', id='pause', hidden=True)
+                                              ], style={'display' : 'flex', 'align-items' : 'center', 'width' : '5%'}),
+                                     html.Div(
+                                              dcc.Slider(min=np.min(anos),
+                                                         max=np.max(anos),
+                                                         marks={str(i): str(i) for i in anos},
+                                                         value=MENOR_ANO,
+                                                         id='passador'), style={'display': 'flex', 'width': '80%'})], style={'display' : 'flex'})
+                        ], id='body', style={'display' : 'flex', 'height' : '350px', 'flex-direction' : 'column', 'justify-content': 'space-between'}),
                         # , style={'width': '80%', 'position': 'fixed', 'top': '50%', 'left': '50%', 'transform': 'translate(-50%, -50%)'}
                dcc.Interval(id='intervalo', interval=PARADO)
               ])
