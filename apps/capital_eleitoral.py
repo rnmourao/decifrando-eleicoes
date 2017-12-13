@@ -46,18 +46,21 @@ ufs = [
 {'label': 'Tocantins', 'value': 'TO'}]
 
 # recuperar arquivo com dados dos deputados estaduais de 2010
-ce_14 = pd.read_csv('data/capital_eleitoral_2018.csv')
+ce_14 = pd.read_csv('data/capital_eleitoral_2014.csv')
 
 # recuperar arquivo com dados dos deputados estaduais de 2014
 ce_18 = pd.read_csv('data/capital_eleitoral_2018.csv')
+
+# recuperar deputados federais de 2014
+df_14 = pd.read_csv('data/centis_deputados_federais_2014.csv')
 
 # recuperar informacoes sobre federais em 2014
 qe_uf = pd.read_csv('data/qe_federal_2014.csv')
 
 layout = html.Div([
-               html.Div([
-                         dcc.Dropdown(options=ufs, id='capital-combo-ufs'),
-                         dcc.Dropdown(options=[], id='capital-combo-candidatos')
+               html.H1('Será que é hora de virar Federal?'),
+               html.Div([html.Div([html.P('Estado: ', style={'width' : '15%'}), html.Div(dcc.Dropdown(options=ufs, id='capital-combo-ufs'), style={'width': '40%'})], style={'display': 'flex'}),
+                         html.Div([html.P('Candidato: ', style={'width' : '15%'}), html.Div(dcc.Dropdown(options=[], id='capital-combo-candidatos'), style={'width': '40%'})], style={'display' : 'flex'})
                        ], id='head'),
                html.Div(id='ce-body')
               ])
@@ -77,68 +80,76 @@ def preenche_combo_candidatos(uf):
 
 
 @app.callback(Output('ce-body', 'children'),
-              [Input('capital-combo-candidatos', 'value'),
-               Input('capital-combo-ufs', 'value')])
-def preenche_capital_eleitoral(nome, uf):
+              [Input('capital-combo-candidatos', 'value')])
+def preenche_capital_eleitoral(cpf):
     leiaute = []
 
-    if not nome:
+    if not cpf:
         return leiaute
 
-    candidato = ce_18[(ce_18['NOME_URNA_CANDIDATO'] == nome) & (ce_18['SIGLA_UF'] == uf)]
+    candidato = ce_18[ce_18['CPF_CANDIDATO'] == cpf]
 
-    resultado = card_candidato_capital(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = card_menos_votado_capital(uf)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = card_mais_votado_capital(uf)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = pizza_sucesso_capital(uf)
-    if resultado:
-        leiaute.append(resultado)
-
-    return leiaute
+    return [card_candidato_capital(candidato), pizza_sucesso_capital(candidato['SIGLA_UF'].iloc[0])]
 
 
 def card_candidato_capital(candidato):
-    return
+    uf = candidato['SIGLA_UF'].iloc[0]
+
+    # calculara projecao da evolucao para federal
+    qe = qe_uf['QUOCIENTE_ELEITORAL'][qe_uf['SIGLA_UF'] == uf].iloc[0]
+    projecao_candidato = int(qe * candidato['TARGET'] * projecao)
+
+    card_candidato = card_menos = html.Div([html.H2('Projeção de Votos em 2018 como Federal: ' + str(projecao_candidato))
+                                            ], style={'background-color' : '#3971b3',
+                                                      'color' : 'white'})
 
 
-def card_menos_votado_capital(candidato):
-    return
+    # dados sobre deputados federais eleitos em 2014
+    eleitos = df_14[(df_14['SIGLA_UE'] == uf) & ((df_14['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
+                    (df_14['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')) ]
+    eleitos = eleitos.sort_values(by='QTDE_VOTOS').reset_index(drop=True)
+
+    # identificar deputado federal menos votado
+    menos = eleitos.head(1)
+
+    card_menos = html.Div([html.H2('Federal Menos Votado em 2014'),
+                           html.H3(menos['NOME_URNA_CANDIDATO'].iloc[0]),
+                           html.H3(menos['DESC_SIT_TOT_TURNO'].iloc[0] + ' (' + str(int(menos['QTDE_VOTOS'].iloc[0])) + ' votos)')
+                           ], style={'float' : 'left',
+                                     'background-color' : '#d0342e',
+                                     'color' : 'white',
+                                     'height' : '150px',
+                                     'width' : '45%'})
 
 
-def card_mais_votado_capital(candidato):
-    return
+    # identificar deputado federal mais votado
+    mais = eleitos.tail(1)
+
+    card_mais  = html.Div([html.H2('Federal Mais Votado em 2014'),
+                           html.H3(mais['NOME_URNA_CANDIDATO'].iloc[0]),
+                           html.H3(mais['DESC_SIT_TOT_TURNO'].iloc[0] + ' (' + str(int(mais['QTDE_VOTOS'].iloc[0])) + ' votos)')
+                           ], style={'float' : 'right',
+                                     'background-color' : '#2e9d2d',
+                                     'color' : 'white',
+                                     'height' : '150px',
+                                     'width' : '45%'})
+
+    card_outros = html.Div([card_menos, card_mais], style={'height' : '150px'})
+
+    return html.Div([html.Br(), card_candidato, card_outros])
 
 
 def pizza_sucesso_capital(uf):
-    return
+    resultados = ce_14[ce_14['SIGLA_UF'] == uf]
+    # resultados['RESULTADO_FEDERAL'][(resultados['RESULTADO_FEDERAL'] == 'ELEITO POR QP') | (resultados['RESULTADO_FEDERAL'] == 'ELEITO POR MÉDIA')] = 'ELEITO'
+    # resultados['RESULTADO_FEDERAL'][resultado['RESULTADO_FEDERAL'] != 'ELEITO'] = 'NÃO ELEITO'
 
+    grupo = resultados.groupby('RESULTADO_FEDERAL').size().reset_index(name='QUANTIDADE')
 
-    # qe = qe_uf['QUOCIENTE_ELEITORAL'][qe_uf['SIGLA_UF'] == uf].iloc[0]
-    #
-    # ce_18_uf = ce_18[ce_18['SIGLA_UF'] == uf]
-    # ce_18_uf = ce_18_uf.sort_values(by='TARGET', ascending=False)
-    # ce_18_uf = ce_18_uf.reset_index(drop=True)
-    #
-    # dados_ce_18_uf = [html.Tr([html.Th('Nome', style=css.tabela['td']),
-    #                                html.Th('Votos Estadual (2014)', style=css.tabela['td']),
-    #                                html.Th('Projeção Votos Federal (2018)', style=css.tabela['td'])])]
-    # for i, s in ce_18_uf.iterrows():
-    #     if i % 2 == 0:
-    #         cor = 'escuro'
-    #     else:
-    #         cor = 'claro'
-    #     dados_ce_18_uf += [html.Tr([html.Td(s['NOME_URNA_CANDIDATO'], style=css.tabela['td']),
-    #                                     html.Td(s['VOTOS_ESTADUAL'], style=css.tabela['td-num']),
-    #                                     html.Td(int(qe * s['TARGET'] * projecao), style=css.tabela['td-num'])], style=css.tabela[cor])]
-    # dados_ce_18_uf = html.Table(dados_ce_18_uf, style=css.tabela['table'])
-    #
-    # return html.Div(dados_ce_18_uf)
+    return dcc.Graph(figure={
+            'data': [go.Pie(labels=grupo['RESULTADO_FEDERAL'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
+            'layout': go.Layout(
+                {'title': 'Taxa de Sucesso no Upgrade para Federal em 2010',
+                 'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Resultado', 'x': 0.50, 'y': 0.5}]}
+            )
+        }, id='pizza-sucesso-capital')

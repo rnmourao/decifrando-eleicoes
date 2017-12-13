@@ -12,6 +12,8 @@ import css
 
 from app import app
 
+# Bandeira < 0.31 <= Regional
+RECORTE_PERFIL = 0.31
 
 print('entrou perfil')
 
@@ -161,7 +163,7 @@ def barra_resultado_perfil(candidato):
 def tabela_similares_perfil(candidato):
 #   identificar candidatos com votacao expressiva que sao similares ao candidato selecionado
     centil = candidato['CENTIL'].iloc[0]
-    similares = expressivos[expressivos['CPF_CANDIDATO'] != cpf]
+    similares = expressivos[expressivos['CPF_CANDIDATO'] != candidato['CPF_CANDIDATO'].iloc[0]]
     similares['DIFERENCA'] = abs(similares['CENTIL'] - centil)
     similares = similares.sort_values(by='DIFERENCA').head(6)
     similares = similares.sort_values(by='QTDE_VOTOS', ascending=False).reset_index(drop=True)

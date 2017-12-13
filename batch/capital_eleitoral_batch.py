@@ -190,6 +190,7 @@ up14 = spark.sql("""
          , A.DESPESA_MAX_CAMPANHA      AS DESPESA_ESTADUAL
          , B.DESPESA_MAX_CAMPANHA      AS DESPESA_FEDERAL
          , A.DESC_SIT_TOT_TURNO        AS RESULTADO_ESTADUAL
+         , B.DESC_SIT_TOT_TURNO        AS RESULTADO_FEDERAL
          , A.QTDE_VOTOS                AS VOTOS_ESTADUAL
          , B.QTDE_VOTOS                AS VOTOS_FEDERAL
     FROM T_DE10 A
@@ -526,7 +527,21 @@ up18.createOrReplaceTempView("T_UP")
 
 # retirar negativos
 up18 = spark.sql("""
-    SELECT *
+    SELECT SIGLA_UF
+         , CPF_CANDIDATO
+         , NOME_URNA_CANDIDATO
+         , CODIGO_LEGENDA
+         , IDADE_DATA_ELEICAO
+         , DESCRICAO_OCUPACAO
+         , DESCRICAO_SEXO
+         , DESCRICAO_GRAU_INSTRUCAO
+         , DESCRICAO_ESTADO_CIVIL
+         , SIGLA_UF_NASCIMENTO
+         , NOME_MUNICIPIO_NASCIMENTO
+         , DESPESA_MAX_CAMPANHA
+         , DESC_SIT_TOT_TURNO
+         , QTDE_VOTOS
+         , PERC_QE
          , CASE WHEN TARGET < 0
                THEN 0
                ELSE TARGET
