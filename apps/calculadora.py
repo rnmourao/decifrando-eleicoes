@@ -35,13 +35,13 @@ layout = html.Div([
                                       html.H2('Quais partidos participarão desta eleição?'),
                                       dcc.Checklist(options=checks, values=partidos, id='participantes', style=css.checkbox),
                                       dcc.Checklist(options=[{'label': 'Todos', 'value': 'Todos'}], values=['Todos'], id='todos-participantes')
-                                     ], style={'float' : 'left'}),
+                                     ], style={'display' : 'flex', 'flex-direction' : 'column','height' : '150px'}),
                             html.Div([
                                       html.H2('Monte a coligação:'),
                                       dcc.Checklist(options=checks, values=[], id='coligacao', style=css.checkbox)
-                                     ], style={'float' : 'right', 'width' : '40%'}),
-                         ], style={'height' : '150px'}),
-               html.Div(style={'height' : '150px'}),
+                                     ], style={'display' : 'flex', 'flex-direction' : 'column','height' : '150px'}),
+                         ]),
+               html.H2('Resultado:'),
                html.Div(id='resultado', style=css.div_centralizada)
               ])
 

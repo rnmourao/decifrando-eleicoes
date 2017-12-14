@@ -34,4 +34,4 @@ tabela = {
 
 div_centralizada = {'display': 'flex', 'flex-direction': 'row', 'justify-content': 'center', 'align-items': 'center'}
 
-checkbox = {'height' : '150px', 'display': 'flex', 'flex-direction' : 'column', 'flex-wrap': 'wrap'}
+checkbox = {'display': 'flex', 'flex-direction' : 'column', 'flex-wrap': 'wrap'}

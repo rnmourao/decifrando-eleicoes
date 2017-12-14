@@ -12,10 +12,12 @@ import css
 
 from app import app
 
+print('entrou perfil')
+
 # Bandeira < 0.31 <= Regional
 RECORTE_PERFIL = 0.31
-
-print('entrou perfil')
+PERFIL_BANDEIRA = open('data/perfil_bandeira.txt', 'r').read()
+PERFIL_REGIONAL = open('data/perfil_regional.txt', 'r').read()
 
 ufs = [
 # {'label': 'Brasil', 'value': 'BR'},
@@ -50,6 +52,10 @@ ufs = [
 # recuperar arquivo com dados dos deputados
 centis = pd.read_csv('data/centis_deputados_federais_2014.csv')
 
+# definir perfil dos candidatos
+centis['PERFIL'] = 'Regional'
+centis['PERFIL'][centis['CENTIL'] < RECORTE_PERFIL] = 'Bandeira'
+
 ## recuperar deputados federais com votos mais expressivos
 # contar eleitos por uf, multiplicando por 5
 por_uf = centis[(centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') | (centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')].groupby('SIGLA_UE').size().reset_index(name='QTDE_ELEITOS')
@@ -65,10 +71,16 @@ for i, u in por_uf.iterrows():
 
 
 layout = html.Div([
+               html.H1('Qual o perfil dos candidatos a Deputado Federal?'),
+               html.H3('Candidatos possuem diversas origens e ideologias. Isso determina seus perfis e, consequentemente, suas estratégias de atuação. Conhecer o perfil pode ajudar a formar alianças com candidatos similares e entender melhor a dinâmica de eleição de um estado.', style={'font-style': 'italic'}),
                html.Div([
-                         dcc.Dropdown(options=ufs, id='perfil-combo-ufs'),
-                         dcc.Dropdown(options=[], id='perfil-combo-candidatos')
-                       ], id='head'),
+                         html.Div([html.P('Estado: ', style={'width' : '15%'}),
+                                   html.Div(dcc.Dropdown(options=ufs, id='perfil-combo-ufs'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
+
+                         html.Div([html.P('Candidato: ', style={'width' : '15%'}),
+                                   html.Div(dcc.Dropdown(options=[], id='perfil-combo-candidatos'), style={'width': '40%'})],
+                                  style={'display' : 'flex', 'align-items': 'center'})
+                       ], id='head', style={'padding' : '25px'}),
                html.Div(id='pf-body')
               ])
 
@@ -93,71 +105,182 @@ def preenche_perfil(cpf):
 
     candidato = centis[centis['CPF_CANDIDATO'] == cpf]
 
-    resultado = card_candidato_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = card_resumo_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = card_menos_votado_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = card_mais_votado_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = pizza_eleitos_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = barra_resultado_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    resultado = tabela_similares_perfil(candidato)
-    if resultado:
-        leiaute.append(resultado)
-
-    return leiaute
+    return [ card_resumo_perfil(candidato),
+             html.Div([card_menos_votado_perfil(candidato),
+                       card_candidato_perfil(candidato),
+                       card_mais_votado_perfil(candidato)], style={'display' : 'flex', 'justify-content' : 'space-around'}),
+             pizza_perfil(candidato),
+             barra_resultado_perfil(candidato),
+             tabela_similares_perfil(candidato)
+           ]
 
 
 def card_candidato_perfil(candidato):
     nome = candidato['NOME_URNA_CANDIDATO']
     partido = candidato['SIGLA_PARTIDO']
     coligacao = candidato['NOME_COLIGACAO']
+    votos = str(int(candidato['QTDE_VOTOS']))
     idade = str(candidato['IDADE_DATA_ELEICAO'].iloc[0]) + " anos"
     natural = "Natural de " + candidato['NOME_MUNICIPIO_NASCIMENTO'] + " (" + candidato['SIGLA_UF_NASCIMENTO'] + ")"
     profissao = candidato['DESCRICAO_OCUPACAO']
     eleito = candidato['DESC_SIT_TOT_TURNO']
-    return html.Div([html.H2(nome + " (" + partido + ")"),
-                     html.H3(coligacao),
+    return html.Div([html.H2('Candidato'),
+                     html.H3(nome + " (" + partido + ")"),
+                    #  html.H4(coligacao),
                      html.P(idade),
                      html.P(natural),
-                     html.P(profissao),
-                     html.P(eleito)])
-
-
-def card_resumo_perfil(candidato):
-    return
+                    #  html.P(profissao),
+                     html.P(eleito + ' (' + votos + ' votos)')], style={'background-color' : '#3971b3',
+                                             'color' : 'white',
+                                             'display': 'flex',
+                                             'flex-direction': 'column',
+                                             'flex-wrap' : 'wrap',
+                                             'justify-content': 'center',
+                                             'align-items': 'center',
+                                             'height' : '350px',
+                                             'padding': '5px'})
 
 
 def card_menos_votado_perfil(candidato):
-    return
+    uf = candidato['SIGLA_UE'].iloc[0]
+    perfil = candidato['PERFIL'].iloc[0]
+
+    # selecionar eleitos do estado
+    eleitos = centis[(centis['SIGLA_UE'] == uf) & ((centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
+                    (centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')) ]
+
+    # ordenar eleitos do mesmo perfil
+    eleitos_perfil = eleitos[eleitos['PERFIL'] == perfil]
+    eleitos_perfil = eleitos_perfil.sort_values(by='QTDE_VOTOS').reset_index(drop=True)
+
+    # identificar deputado federal menos votado
+    menos = eleitos_perfil.head(1)
+    nome = menos['NOME_URNA_CANDIDATO']
+    partido = menos['SIGLA_PARTIDO']
+    coligacao = menos['NOME_COLIGACAO']
+    votos = str(int(menos['QTDE_VOTOS']))
+    idade = str(menos['IDADE_DATA_ELEICAO'].iloc[0]) + " anos"
+    natural = "Natural de " + menos['NOME_MUNICIPIO_NASCIMENTO'] + " (" + menos['SIGLA_UF_NASCIMENTO'] + ")"
+    profissao = menos['DESCRICAO_OCUPACAO']
+    eleito = menos['DESC_SIT_TOT_TURNO']
+    return html.Div([html.H2(perfil + ' Menos Votado'),
+                     html.H3(nome + " (" + partido + ")"),
+                    #  html.H4(coligacao),
+                     html.P(idade),
+                     html.P(natural),
+                    #  html.P(profissao),
+                     html.P(eleito + ' (' + votos + ' votos)')], style={'background-color' : '#d0342e',
+                                             'color' : 'white',
+                                             'display': 'flex',
+                                             'flex-direction': 'column',
+                                             'flex-wrap' : 'wrap',
+                                             'justify-content': 'center',
+                                             'align-items': 'center',
+                                             'height' : '350px',
+                                             'padding': '5px'})
 
 
 def card_mais_votado_perfil(candidato):
-    return
+    uf = candidato['SIGLA_UE'].iloc[0]
+    perfil = candidato['PERFIL'].iloc[0]
+
+    # selecionar eleitos do estado
+    eleitos = centis[(centis['SIGLA_UE'] == uf) & ((centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
+                    (centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')) ]
+
+    # ordenar eleitos do mesmo perfil
+    eleitos_perfil = eleitos[eleitos['PERFIL'] == perfil]
+    eleitos_perfil = eleitos_perfil.sort_values(by='QTDE_VOTOS').reset_index(drop=True)
+
+    # identificar deputado federal mais votado
+    mais = eleitos_perfil.tail(1)
+    nome = mais['NOME_URNA_CANDIDATO']
+    partido = mais['SIGLA_PARTIDO']
+    coligacao = mais['NOME_COLIGACAO']
+    votos = str(int(mais['QTDE_VOTOS']))
+    idade = str(mais['IDADE_DATA_ELEICAO'].iloc[0]) + " anos"
+    natural = "Natural de " + mais['NOME_MUNICIPIO_NASCIMENTO'] + " (" + mais['SIGLA_UF_NASCIMENTO'] + ")"
+    profissao = mais['DESCRICAO_OCUPACAO']
+    eleito = mais['DESC_SIT_TOT_TURNO']
+    return html.Div([html.H2(perfil + ' Mais Votado'),
+                     html.H3(nome + " (" + partido + ")"),
+                    #  html.H4(coligacao),
+                     html.P(idade),
+                     html.P(natural),
+                    #  html.P(profissao),
+                     html.P(eleito + ' (' + votos + ' votos)')], style={'background-color' : '#2fa12e',
+                                             'color' : 'white',
+                                             'display': 'flex',
+                                             'flex-direction': 'column',
+                                             'flex-wrap' : 'wrap',
+                                             'justify-content': 'center',
+                                             'align-items': 'center',
+                                             'height' : '350px',
+                                             'padding': '5px'})
 
 
-def pizza_eleitos_perfil(candidato):
-    return
+
+def card_resumo_perfil(candidato):
+    if candidato['PERFIL'].iloc[0] == 'Bandeira':
+        resumo = PERFIL_BANDEIRA
+    else:
+        resumo = PERFIL_REGIONAL
+
+    return html.Div([html.H2('Perfil do Candidato: ' + candidato['PERFIL'].iloc[0]),
+                     html.H4(resumo)])
+
+
+def pizza_perfil(candidato):
+    uf = candidato['SIGLA_UE'].iloc[0]
+    perfil = candidato['PERFIL'].iloc[0]
+
+    # selecionar eleitos do estado
+    eleitos = centis[(centis['SIGLA_UE'] == uf) & ((centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
+                    (centis['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')) ]
+
+    # pizza eleitos por perfil
+    grupo = eleitos.groupby('PERFIL').size().reset_index(name='QUANTIDADE')
+    pizza = dcc.Graph(figure={
+                              'data': [go.Pie(labels=grupo['PERFIL'].values.tolist(),
+                                              values=grupo['QUANTIDADE'].values.tolist(),
+                                              hole=0.5)],
+                              'layout': go.Layout(
+                                                  {'annotations': [{'font': {'size': 20},
+                                                                    'showarrow': False,
+                                                                    'text': 'Eleitos',
+                                                                    'x': 0.50,
+                                                                    'y': 0.5}],
+                                                   'title' : 'Perfil dos Eleitos'}
+                                                 )},
+                      id='pizza-eleitos-perfil')
+
+    return html.Div(pizza)
 
 
 def barra_resultado_perfil(candidato):
-    return
+    uf = candidato['SIGLA_UE'].iloc[0]
+
+    cands_uf = centis[centis['SIGLA_UE'] == uf]
+
+    prf = pd.merge(pd.DataFrame({'DESC_SIT_TOT_TURNO' : ['ELEITO POR QP', 'ELEITO POR MÉDIA', 'SUPLENTE', 'NÃO ELEITO'], 'CHAVE': [1, 1, 1, 1]}),
+                   pd.DataFrame({'PERFIL' : ['Bandeira', 'Regional'], 'CHAVE': [1, 1]}))
+
+    qt_perfil = cands_uf.groupby(['PERFIL', 'DESC_SIT_TOT_TURNO']).size().reset_index(name='QUANTIDADE')
+    qt_perfil = pd.merge(prf, qt_perfil, how='left').fillna(0).reset_index(drop=True)
+
+    trace1 = go.Bar(x=qt_perfil['DESC_SIT_TOT_TURNO'][qt_perfil['PERFIL'] == 'Bandeira'],
+                    y=qt_perfil['QUANTIDADE'][qt_perfil['PERFIL'] == 'Bandeira'],
+                    name='Bandeira'
+                   )
+
+    trace2 = go.Bar(x=qt_perfil['DESC_SIT_TOT_TURNO'][qt_perfil['PERFIL'] == 'Regional'],
+                    y=qt_perfil['QUANTIDADE'][qt_perfil['PERFIL'] == 'Regional'],
+                    name='Regional'
+                   )
+    data = [trace1, trace2]
+    layout = go.Layout( barmode='group', title='Resultado da Eleição baseada no Perfil' )
+
+    return dcc.Graph(figure={'data': data, 'layout': layout}, id='barra-resultado-perfil')
 
 
 def tabela_similares_perfil(candidato):
@@ -184,4 +307,5 @@ def tabela_similares_perfil(candidato):
                                      html.Td(s['QTDE_VOTOS'], style=css.tabela['td-num']),
                                      html.Td(s['DESC_SIT_TOT_TURNO'], style=css.tabela['td'])], style=css.tabela[cor])]
 
-    return html.Table(dados_similares, style=css.tabela['table'])
+    return html.Div([html.P('Candidatos semelhantes', style=css.div_centralizada),
+                     html.Div(html.Table(dados_similares, style=css.tabela['table']), style=css.div_centralizada)])

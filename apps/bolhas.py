@@ -84,7 +84,7 @@ layout = html.Div([
                                                      'align-items': 'center'}),
                                      html.Div(dcc.Checklist(options=ufs, values=['SP'], id='check-visao',
                                                             style=css.checkbox),
-                                              style={'display' : 'flex', 'align-items': 'center'})]),
+                                              style={'display' : 'flex', 'align-items': 'center'})], style={'height' : '200px'}),
 
                          html.Div([html.P('Cargo:'), dcc.Checklist(options=cargos, values=[CARGO.DEPUTADO_FEDERAL],
                                   id='cargos',)], style={'display' : 'flex', 'align-items': 'center'})

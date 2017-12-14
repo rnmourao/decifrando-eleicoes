@@ -103,9 +103,9 @@ def card_candidato_capital(candidato):
     qe = qe_uf['QUOCIENTE_ELEITORAL'][qe_uf['SIGLA_UF'] == uf].iloc[0]
     projecao_candidato = int(qe * candidato['TARGET'] * projecao)
 
-    card_candidato = card_menos = html.Div([html.H2('Projeção de Votos em 2018 como Federal: ' + str(projecao_candidato))
-                                            ], style={'background-color' : '#3971b3',
-                                                      'color' : 'white'})
+    card_candidato = html.Div([html.H2('Projeção de Votos em 2018 como Federal: ' + str(projecao_candidato))
+                              ], style={'background-color' : '#3971b3',
+                                        'color' : 'white'})
 
 
     # dados sobre deputados federais eleitos em 2014
