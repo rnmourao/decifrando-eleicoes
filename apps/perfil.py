@@ -66,11 +66,10 @@ centis = centis.sort_values(by=['SIGLA_UE', 'QTDE_VOTOS'], ascending=[True, Fals
 layout = html.Div([
                html.H1('"Cada homem que encontro é superior a mim em alguma coisa; e nisto posso aprender dele".'),
                html.Div(html.H3('Dale Carnegie', style={'width' : 'auto'}), style={'display' : 'flex', 'justify-content' : 'flex-end'}),
-                        html.H3(['Candidatos precisam conhecer suas características eleitorais para maximizar seus resultados nas urnas. A partir de um algoritmo de similaridade, identificamos os candidatos que mais se parecem no que tange à distribuição de sua votação no âmbito de uma Unidade Federativa e criamos uma classificação para eles inspiradas em um trabalho acadêmico dos membros da equipe Decipher, obtido em ', html.A('https://osf.io/8z88j', href='https://osf.io/8z88j', target='_blank')], style={'font-style': 'italic'}),
+                        html.H3(['Candidatos precisam conhecer suas características eleitorais para maximizar seus resultados nas urnas. A partir de um algoritmo de similaridade, identificamos outros candidatos que mais se parecem no que tange à distribuição de sua votação no âmbito de uma Unidade Federativa e criamos uma classificação para eles inspiradas em um trabalho acadêmico dos membros da equipe Decipher, obtido em ', html.A('https://osf.io/8z88j', href='https://osf.io/8z88j', target='_blank')], style={'font-style': 'italic'}),
                html.Div([
                          html.Div([html.P('Benchmark: ', style={'width' : '15%'}),
-                                   dcc.RadioItems(options=[ {'label': 'Todos', 'value': 'todos'},
-                                                            {'label': 'por Matiz Ideológica', 'value': 'matiz'} ], value='matiz', id='visao-matiz-perfil')], style={'display': 'flex', 'align-items': 'center'}),
+                                   dcc.RadioItems(options=[ {'label': 'por Matiz Ideológica', 'value': 'matiz'}, {'label': 'Todos', 'value': 'todos'} ], value='matiz', id='visao-matiz-perfil')], style={'display': 'flex', 'align-items': 'center'}),
 
                          html.Div([html.P('Estado: ', style={'width' : '15%'}),
                                    html.Div(dcc.Dropdown(options=ufs, id='perfil-combo-ufs'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
