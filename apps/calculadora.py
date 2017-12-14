@@ -119,22 +119,6 @@ def efetua_calculo(participantes, coligacao):
                                html.Td('-', style=css.tabela['td-num']),
                                html.Td(str(dt.timedelta(seconds=(ti))), style=css.tabela['td-num'])])], style=css.tabela['table'])
 
-    # return [html.H1('Tempo Disponível em Programas de Rádio e TV'),
-    #         html.H2('Coligação ' + parts),
-    #         html.P(),
-    #         html.H2('1º Turno:'),
-    #         html.P(),
-    #         html.H2('Tempo Total de Programa por dia: ' + str(dt.timedelta(seconds=(tp_ttl)))),
-    #         html.H3('Tempo para Presidente:' + str(dt.timedelta(seconds=(tp_pres)))),
-    #         html.H3('Tempo para Governador:' + str(dt.timedelta(seconds=(tp_gov)))),
-    #         html.H3('Tempo para Senador (2/3):' + str(dt.timedelta(seconds=(tp_sen)))),
-    #         html.H3('Tempo para Deputado Federal:' + str(dt.timedelta(seconds=(tp_dep_f)))),
-    #         html.H3('Tempo para Deputado Estadual:' + str(dt.timedelta(seconds=(tp_dep_e)))),
-    #         html.P(),
-    #         html.H2('Para o 2º Turno, Presidente e Governador terão 10 minutos por dia.'),
-    #         html.P(),
-    #         html.H2('Tempo Total de Inserções por dia: ' + str(dt.timedelta(seconds=(ti))))]
-
 
 def calcula_tempo(todos, participantes, coligacao, tempo_disponivel, majoritaria=False):
     if not participantes:
