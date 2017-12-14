@@ -62,7 +62,7 @@ visao = [
 {'label': 'Partido', 'value': 'Partido'}
 ]
 
-anos = [i for i in np.arange(1998, 2020, 2)]
+anos = [i for i in np.arange(1998, 2019, 2)]
 
 # recuperar arquivo com votacoes
 df = pd.read_csv('data/bolhas.csv')
@@ -84,7 +84,7 @@ layout = html.Div([
                                                      'align-items': 'center'}),
                                      html.Div(dcc.Checklist(options=ufs, values=['SP'], id='check-visao',
                                                             style=css.checkbox),
-                                              style={'display' : 'flex', 'align-items': 'center'})], style={'height' : '200px'}),
+                                              style={'display' : 'flex', 'height' : '100px'})], style={'height' : '150px'}),
 
                          html.Div([html.P('Cargo:'), dcc.Checklist(options=cargos, values=[CARGO.DEPUTADO_FEDERAL],
                                   id='cargos',)], style={'display' : 'flex', 'align-items': 'center'})
@@ -93,8 +93,7 @@ layout = html.Div([
                          dcc.Graph(id='bolhas', style={'height' : '300px'}),
                          html.Div([
                                      html.Div([
-                                               html.Button('>', id='play'),
-                                               html.Button('II', id='pause', hidden=True)
+                                               html.Button('>', id='play')
                                               ], style={'display' : 'flex', 'align-items' : 'center', 'width' : '5%'}),
                                      html.Div(
                                               dcc.Slider(min=np.min(anos),
@@ -177,7 +176,7 @@ def grafico_por_estado(ano, cargos, ufs):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'True'},
             yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},
@@ -228,7 +227,7 @@ def grafico_por_partido(ano, cargos, partidos):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'True'},
             yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},
@@ -238,48 +237,23 @@ def grafico_por_partido(ano, cargos, partidos):
 
 
 @app.callback(
-    Output('play', 'hidden'),
-    [Input('play', 'n_clicks'),
-     Input('pause', 'n_clicks')],
-    [State('passador', 'value')])
-def visibilidade_play(play, pause, ano):
-    if ano >= MAIOR_ANO:
-        return False
+    Output('play', 'children'),
+    [Input('play', 'n_clicks')])
+def visibilidade_play(play):
+    if play % 2 == 0:
+        return '>'
     else:
-        if (play > pause):
-            return True
-        else:
-            return False
-
-
-@app.callback(
-    Output('pause', 'hidden'),
-    [Input('play', 'n_clicks'),
-     Input('pause', 'n_clicks')],
-    [State('passador', 'value')])
-def visibilidade_pause(play, pause, ano):
-    if ano >= MAIOR_ANO:
-        return True
-    else:
-        if play > pause:
-            return False
-        else:
-            return True
+        return 'II'
 
 
 @app.callback(
     Output('intervalo', 'interval'),
-    [Input('play', 'n_clicks'),
-     Input('pause', 'n_clicks')],
-    [State('passador', 'value')])
-def controlar_intervalo(play, pause, ano):
-    if ano >= MAIOR_ANO:
+    [Input('play', 'n_clicks')])
+def controlar_intervalo(play):
+    if play % 2 == 0:
         return PARADO
     else:
-        if play > pause:
-            return TEMPO
-        else:
-            return PARADO
+        return TEMPO
 
 
 # atualiza passador
@@ -289,5 +263,6 @@ def controlar_intervalo(play, pause, ano):
     state=[State('passador', 'value')])
 def atualiza_ano(ano):
     if ano < MAIOR_ANO:
-        ano += 4
-    return ano
+        return ano + 4
+    else:
+        return MENOR_ANO

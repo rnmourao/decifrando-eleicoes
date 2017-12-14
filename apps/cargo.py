@@ -98,6 +98,8 @@ for i in numpy.arange(2016, 1998, -2):
 
 # layout principal
 layout_pagina = [html.Div([
+                           html.H1('Dados demográficos sobre as eleições'),
+                           html.H3('Aqui é possível obter comparativos entre os candidatos.', style={'font-style': 'italic'}),
                            html.Label('Cargo:', style={'display': 'inline'}),
                            dcc.Dropdown(id='lista-cargos', options=cargos),
                            html.Label('Ano:'),
