@@ -30,6 +30,7 @@ checks = [{'label': p, 'value': p} for p in partidos]
 
 layout = html.Div([
                 html.H1('Tempo Disponível em Programas de Rádio e TV'),
+                html.H3('No mundo dos negócios, Time is Money, mas na política, Tempo é Voto. Com quem coligar para maximizar o tempo de rádio e tv? Modelo inédito de calculadora totalmente baseado na lei 13.488/2017 que alterou a Lei das Eleições.', style={'font-style': 'italic'}),
                 html.Div([
                             html.Div([
                                       html.H2('Quais partidos participarão desta eleição?'),

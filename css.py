@@ -2,8 +2,8 @@
 
 index = {
          'todo' : {'display': 'flex'},
-         'div-esquerda' : {'width': '30%', 'float': 'left'},
-         'div-direita' : {'width': '90%', 'float': 'right', 'margin': '10px'}
+        #  'div-esquerda' : {'width': '30%', 'float': 'left'},
+         'div-direita' : {'width': '80%', 'float': 'right', 'margin': '10px'}
 }
 
 bolhas = {

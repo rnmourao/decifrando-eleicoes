@@ -75,7 +75,7 @@ partidos = [{'label': p, 'value': p} for p in ps]
 
 layout = html.Div([
                html.H1('Como está a eficiência dos partidos?'),
-               html.H3('Quais partidos elegem mais tendo menos candidatos? Será que a eficiência de um partido é igual em todos os estados?', style={'font-style': 'italic'}),
+               html.H3('Quais os partidos mais efetivos e os menos efetivos de uma Unidade Federativa? Em que Estado um partido é mais ou menos efetivo eleitoralmente? ', style={'font-style': 'italic'}),
                html.Div([
                          html.Div([
                                      html.Div([html.P('Visão: '),
@@ -176,7 +176,7 @@ def grafico_por_estado(ano, cargos, ufs):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'True'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
             yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},
@@ -227,7 +227,7 @@ def grafico_por_partido(ano, cargos, partidos):
     return {
         'data': tracos,
         'layout': go.Layout(
-            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'True'},
+            xaxis={'type': '-', 'title': 'Percentual de Candidatos', 'autorange': 'reversed'},
             yaxis={'title': 'Percentual de Eleitos', 'autorange': 'True'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             # legend={'x': 0, 'y': 1},

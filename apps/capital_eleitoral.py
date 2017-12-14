@@ -59,7 +59,7 @@ qe_uf = pd.read_csv('data/qe_federal_2014.csv')
 
 layout = html.Div([
                html.H1('Será que é hora de virar Federal?'),
-               html.H3('Fizemos uma projeção da quantidade de votos que um candidato a Deputado Estadual conseguiria se resolvesse se candidatar a Deputado Federal.', style={'font-style': 'italic'}),
+               html.H3('Candidatos a Deputado Estadual em 2014, eleitos ou não, obtém aqui uma projeção da quantidade de votos que conseguiriam como Deputado Federal em  2018. Essa projeção foi alcançada usando inteligência artificial sobre dados de eleições anteriores.', style={'font-style': 'italic'}),
                html.Div([html.Div([html.P('Estado: ', style={'width' : '15%'}),
                          html.Div(dcc.Dropdown(options=ufs, id='capital-combo-ufs'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
 

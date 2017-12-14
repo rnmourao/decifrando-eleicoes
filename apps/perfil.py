@@ -71,8 +71,10 @@ for i, u in por_uf.iterrows():
 
 
 layout = html.Div([
-               html.H1('Qual o perfil dos candidatos a Deputado Federal?'),
-               html.H3('Candidatos possuem diversas origens e ideologias. Isso determina seus perfis e, consequentemente, suas estratégias de atuação. Conhecer o perfil pode ajudar a formar alianças com candidatos similares e entender melhor a dinâmica de eleição de um estado.', style={'font-style': 'italic'}),
+               html.H1('"Cada homem que encontro é superior a mim em alguma coisa; e nisto posso aprender dele".'),
+               html.Div(html.H3('Dale Carnegie', style={'width' : 'auto'}), style={'display' : 'flex', 'justify-content' : 'flex-end'}),
+            #    html.H4('Dale Carnegie', style={'display' : 'flex', 'align-content' : 'flex-end', 'width' : 'auto'}),
+                        html.H3(['Candidatos precisam conhecer suas características eleitorais para maximizar seus resultados nas urnas. A partir de um algoritmo de similaridade, identificamos os candidatos que mais se parecem no que tange à distribuição de sua votação no âmbito de uma Unidade Federativa e criamos uma classificação para eles inspiradas em um trabalho acadêmico dos membros da equipe Decipher, obtido em ', html.A('https://osf.io/8z88j', href='https://osf.io/8z88j', target='_blank')], style={'font-style': 'italic'}),
                html.Div([
                          html.Div([html.P('Estado: ', style={'width' : '15%'}),
                                    html.Div(dcc.Dropdown(options=ufs, id='perfil-combo-ufs'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),

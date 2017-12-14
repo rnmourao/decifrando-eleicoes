@@ -12,27 +12,16 @@ server = app.server
 app.layout = html.Div([
      dcc.Tabs(
         tabs=[
-            {'label': 'Cargos', 'value': 'idx-cargo'},
-            {'label': 'Calculadora de TV', 'value': 'idx-calc'},
+            {'label': 'Tempo de Rádio e TV', 'value': 'idx-calc'},
             {'label': 'Eficiência dos Partidos', 'value': 'idx-bolhas'},
-            {'label': 'Perfil do Candidato', 'value': 'idx-perfil'},
-            {'label': 'Capital Eleitoral', 'value': 'idx-capital'}
+            {'label': 'Benchmark Eleitoral', 'value': 'idx-perfil'},
+            {'label': 'Capital Eleitoral', 'value': 'idx-capital'},
+            {'label': 'Cargos', 'value': 'idx-cargo'}
         ],
-        value='idx-cargo',
+        value='idx-calc',
         vertical=True,
         id='tabs'
     ),
-    # html.Div([
-    # dcc.RadioItems(
-    # options=[
-    #     {'label': 'Cargos', 'value': 'idx-cargo'},
-    #     {'label': 'Calculadora de TV', 'value': 'idx-calc'},
-    #     {'label': 'Eficiência dos Partidos', 'value': 'idx-bolhas'},
-    #     {'label': 'Perfil do Candidato', 'value': 'idx-perfil'},
-    #     {'label': 'Capital Eleitoral', 'value': 'idx-capital'}
-    # ],
-    # value='idx-bolhas',
-    # id='tabs')], style=css.index['div-esquerda']),
     html.Div(id='page-content', style=css.index['div-direita'])
 ], style=css.index['todo'])
 
