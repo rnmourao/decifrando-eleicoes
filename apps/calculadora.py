@@ -117,7 +117,7 @@ def efetua_calculo(participantes, coligacao):
                                html.Td('-', style=css.tabela['td-num']),
                                html.Td('-', style=css.tabela['td-num']),
                                html.Td('-', style=css.tabela['td-num']),
-                               html.Td(str(dt.timedelta(seconds=(ti))), style=css.tabela['td-num'])])], style=css.tabela['table'])
+                               html.Td('-', style=css.tabela['td-num'])])], style=css.tabela['table'])
 
 
 def calcula_tempo(todos, participantes, coligacao, tempo_disponivel, majoritaria=False):

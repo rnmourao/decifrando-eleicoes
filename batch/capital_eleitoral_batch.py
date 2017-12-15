@@ -26,6 +26,7 @@ de10 = spark.sql("""
          , _c12 AS NUMERO_CANDIDATO
          , _c13 AS CPF_CANDIDATO
          , _c14 AS NOME_URNA_CANDIDATO
+         , _c18 AS SIGLA_PARTIDO
          , _c20 AS CODIGO_LEGENDA
          , _c25 AS DESCRICAO_OCUPACAO
          , _c28 AS IDADE_DATA_ELEICAO
@@ -71,6 +72,7 @@ de10 = spark.sql("""
     SELECT A.SIGLA_UF
          , A.CPF_CANDIDATO
          , A.NOME_URNA_CANDIDATO
+         , A.SIGLA_PARTIDO
          , A.CODIGO_LEGENDA
          , A.IDADE_DATA_ELEICAO
          , A.DESCRICAO_OCUPACAO
@@ -106,6 +108,7 @@ df14 = spark.sql("""
          , _c12 AS NUMERO_CANDIDATO
          , _c13 AS CPF_CANDIDATO
          , _c14 AS NOME_URNA_CANDIDATO
+         , _c18 AS SIGLA_PARTIDO
          , _c20 AS CODIGO_LEGENDA
          , _c25 AS DESCRICAO_OCUPACAO
          , _c28 AS IDADE_DATA_ELEICAO
@@ -149,6 +152,7 @@ df14 = spark.sql("""
     SELECT A.SIGLA_UF
          , A.CPF_CANDIDATO
          , A.NOME_URNA_CANDIDATO
+         , A.SIGLA_PARTIDO
          , A.CODIGO_LEGENDA
          , A.IDADE_DATA_ELEICAO
          , A.DESCRICAO_OCUPACAO
@@ -178,6 +182,8 @@ up14 = spark.sql("""
          , B.NOME_MUNICIPIO_NASCIMENTO
          , A.CODIGO_LEGENDA            AS LEGENDA_ESTADUAL
          , B.CODIGO_LEGENDA            AS LEGENDA_FEDERAL
+         , A.SIGLA_PARTIDO             AS PARTIDO_ESTADUAL
+         , B.SIGLA_PARTIDO             AS PARTIDO_FEDERAL
          , A.IDADE_DATA_ELEICAO        AS IDADE_ESTADUAL
          , A.DESCRICAO_OCUPACAO        AS OCUPACAO_ESTADUAL
          , B.DESCRICAO_OCUPACAO        AS OCUPACAO_FEDERAL
@@ -432,6 +438,7 @@ de14 = spark.sql("""
          , _c12 AS NUMERO_CANDIDATO
          , _c13 AS CPF_CANDIDATO
          , _c14 AS NOME_URNA_CANDIDATO
+         , _c18 AS SIGLA_PARTIDO
          , _c20 AS CODIGO_LEGENDA
          , _c25 AS DESCRICAO_OCUPACAO
          , _c28 AS IDADE_DATA_ELEICAO
@@ -444,6 +451,7 @@ de14 = spark.sql("""
          , _c44 AS DESC_SIT_TOT_TURNO
     FROM T_CAND14
     WHERE _c9 = 'DEPUTADO ESTADUAL'
+       OR _c9 = 'DEPUTADO DISTRITAL'
 """)
 de14.createOrReplaceTempView("T_DE14")
 
@@ -452,6 +460,7 @@ de14 = spark.sql("""
     SELECT A.SIGLA_UF
          , A.CPF_CANDIDATO
          , A.NOME_URNA_CANDIDATO
+         , A.SIGLA_PARTIDO
          , A.CODIGO_LEGENDA
          , A.IDADE_DATA_ELEICAO
          , A.DESCRICAO_OCUPACAO
@@ -530,6 +539,7 @@ up18 = spark.sql("""
     SELECT SIGLA_UF
          , CPF_CANDIDATO
          , NOME_URNA_CANDIDATO
+         , SIGLA_PARTIDO
          , CODIGO_LEGENDA
          , IDADE_DATA_ELEICAO
          , DESCRICAO_OCUPACAO

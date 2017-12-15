@@ -98,15 +98,22 @@ def preenche_capital_eleitoral(cpf):
 
 def card_candidato_capital(candidato):
     uf = candidato['SIGLA_UF'].iloc[0]
+    nome = candidato['NOME_URNA_CANDIDATO']
+    partido = candidato['SIGLA_PARTIDO']
+    votos = str(int(candidato['QTDE_VOTOS']))
+    eleito = candidato['DESC_SIT_TOT_TURNO']
 
     # calculara projecao da evolucao para federal
     qe = qe_uf['QUOCIENTE_ELEITORAL'][qe_uf['SIGLA_UF'] == uf].iloc[0]
     projecao_candidato = int(qe * candidato['TARGET'] * projecao)
 
-    card_candidato = html.Div([html.H2('Projeção de Votos em 2018 como Federal: ' + str(projecao_candidato))
-                              ], style={'background-color' : '#3971b3',
-                                        'color' : 'white'})
-
+    card_candidato = html.Div([html.H2(nome + " (" + partido + ")"),
+                               html.H3(eleito + ' (' + votos + ' votos em 2014)'),
+                               html.H3('Projeção de Votos em 2018 como Federal: ' + str(projecao_candidato))],
+                              style={'display': 'flex',
+                                     'flex-direction': 'column',
+                                     'flex-wrap' : 'wrap',
+                                     'padding': '5px'})
 
     # dados sobre deputados federais eleitos em 2014
     eleitos = df_14[(df_14['SIGLA_UE'] == uf) & ((df_14['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
