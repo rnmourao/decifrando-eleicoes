@@ -4,6 +4,7 @@ from dash.dependencies import Event, Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
+from plotly import tools
 from cepesp import *
 import numpy
 import locale
@@ -174,11 +175,6 @@ def atualiza_pesquisa(botao, cargo, ano, uf, municipio):
         else:
             regional = AGR_REGIONAL.MUNICIPIO
 
-    print('cargo:' + str(cargo))
-    print('ano: ' + str(ano))
-    print('uf: ' + uf)
-    print(municipio)
-
     df = votos_x_candidatos(cargo=cargo, ano=ano, agregacao_politica=1, agregacao_regional=regional, estado=estado)
 
     if df.empty:
@@ -222,7 +218,6 @@ def atualiza_pesquisa(botao, cargo, ano, uf, municipio):
     numero_eleitos = len(df[(df['DESC_SIT_TOT_TURNO'] == 'ELEITO') |
                             (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
                             (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')])
-    print('numero de eleitos: ' + str(numero_eleitos))
     if numero_eleitos == 1:
         return preenche_layout_um(df)
     else:
@@ -275,9 +270,9 @@ def preenche_layout_um(df):
     if resultado:
         layout.append(dcc.Graph(figure=resultado, id='pizza-grau-instrucao'))
 
-    resultado = pizza_ocupacao(df_candidatos)
-    if resultado:
-        layout.append(dcc.Graph(figure=resultado, id='pizza-ocupacao'))
+    # resultado = pizza_ocupacao(df_candidatos)
+    # if resultado:
+    #     layout.append(dcc.Graph(figure=resultado, id='pizza-ocupacao'))
 
     return layout
 
@@ -296,11 +291,6 @@ def preenche_layout_varios(df):
     candidatos['ELEITO'][candidatos['NOME_URNA_CANDIDATO'].isin(nome_eleitos)] = 'Sim'
 
     layout = []
-
-    # tabela candidatos (coluna eleitos)
-    # resultado = tabela_candidatos(candidatos)
-    # if resultado:
-    #     layout.append(html.Div(resultado))
 
     # histograma-candidatos-custos
     resultado = histograma_candidatos_custos(eleitos, nao_eleitos)
@@ -333,40 +323,11 @@ def preenche_layout_varios(df):
         layout.append(html.Div(resultado))
 
     # pizza-candidatos-ocupacao
-    resultado = pizza_candidatos_ocupacao(eleitos, nao_eleitos)
-    if resultado:
-        layout.append(html.Div(resultado))
+    # resultado = pizza_candidatos_ocupacao(eleitos, nao_eleitos)
+    # if resultado:
+    #     layout.append(html.Div(resultado))
 
     return layout
-
-# def tabela_candidatos(candidatos):
-#     df = candidatos[['SIGLA_UF', 'NOME_URNA_CANDIDATO', 'SIGLA_PARTIDO', 'ELEITO', 'QTDE_VOTOS']]
-#     df.columns = ['Estado', 'Candidato', 'Partido', 'Eleito', 'Votos']
-#     df = df.sort_values(by=['Estado', 'Eleito', 'Votos'], ascending=[True, False, False])
-#
-#     tabela = dt.DataTable(
-#             rows=df.to_dict('records'),
-#
-#             # optional - sets the order of columns
-#             columns=df.columns,
-#
-#             row_selectable=False,
-#             filterable=True,
-#             sortable=True,
-#             selected_row_indices=[],
-#             id='tabela-candidatos'
-#         )
-#
-#     return tabela
-    #
-    # max_rows = 50
-    # return html.Table(
-    #     # Header
-    #     [html.Tr([html.Th(col) for col in df.columns])] +
-    #
-    #     # cg-body
-    #     [html.Tr([html.Td(df.iloc[i][col]) for col in df.columns]) for i in range(min(len(df), max_rows))]
-    # )
 
 
 def histograma_candidatos_custos(eleitos, nao_eleitos):
@@ -439,53 +400,102 @@ def pizza_candidatos_sexo(eleitos, nao_eleitos):
     ge = eleitos.groupby('DESCRICAO_SEXO').size().reset_index(name='QUANTIDADE')
     gne = nao_eleitos.groupby('DESCRICAO_SEXO').size().reset_index(name='QUANTIDADE')
 
-    return [dcc.Graph(id='pizza-eleitos-sexo', figure={
+    return [html.Div([html.Div(dcc.Graph(id='pizza-eleitos-sexo', figure={
             'data': [go.Pie(labels=ge['DESCRICAO_SEXO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
-        }), dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
+        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_SEXO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                     'legend' : {'orientation' : 'h'}}
                 )
-            })]
+            }), style={'width' : '45%'})], style={'display' : 'flex'})]
 
+    # traco1 = go.Pie(labels=ge['DESCRICAO_SEXO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(),
+    #                 hole=0.5,
+    #                 font={'size': 20},
+    #                 showarrow=False,
+    #                 text='Eleitos',
+    #                 x=0.5,
+    #                 y=0.5)
+    # traco2 = go.Pie(labels=gne['DESCRICAO_SEXO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(),
+    #                 hole=0.5,
+    #                 font={'size': 20},
+    #                 showarrow=False,
+    #                 text='Não Eleitos',
+    #                 x=0.5,
+    #                 y=0.5)
+    #
+    # fig = tools.make_subplots(rows=1, cols=2)
+    # fig.append_trace(traco1, 1, 1)
+    # fig.append_trace(traco2, 1, 2)
+    # fig['layout'].update(height=600, width=600, title='i <3 subplots')
+    # return [dcc.Graph(figure=fig, id='pizza-eleitos-sexo')]
 
 
 def pizza_candidatos_estado_civil(eleitos, nao_eleitos):
     ge = eleitos.groupby('DESCRICAO_ESTADO_CIVIL').size().reset_index(name='QUANTIDADE')
     gne = nao_eleitos.groupby('DESCRICAO_ESTADO_CIVIL').size().reset_index(name='QUANTIDADE')
 
-    return [dcc.Graph(id='pizza-eleitos-estado-civil', figure={
+    return [html.Div([html.Div(dcc.Graph(id='pizza-eleitos-estado-civil', figure={
             'data': [go.Pie(labels=ge['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
-        }), dcc.Graph(id='pizza-nao-eleitos-civil', figure={
+        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-civil', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                     'legend' : {'orientation' : 'h'}}
                 )
-            })]
+            }), style={'width' : '45%'})], style={'display' : 'flex'})]
 
+    # return [dcc.Graph(id='pizza-eleitos-estado-civil', figure={
+    #         'data': [go.Pie(labels=ge['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #         'layout': go.Layout(
+    #             {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #         )
+    #     }), dcc.Graph(id='pizza-nao-eleitos-civil', figure={
+    #             'data': [go.Pie(labels=gne['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #             'layout': go.Layout(
+    #                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #             )
+    #         })]
 
 
 def pizza_candidatos_grau_instrucao(eleitos, nao_eleitos):
     ge = eleitos.groupby('DESCRICAO_GRAU_INSTRUCAO').size().reset_index(name='QUANTIDADE')
     gne = nao_eleitos.groupby('DESCRICAO_GRAU_INSTRUCAO').size().reset_index(name='QUANTIDADE')
 
-    return [dcc.Graph(id='pizza-eleitos-grau-instrucao', figure={
+    return [html.Div([html.Div(dcc.Graph(id='pizza-eleitos-grau-instrucao', figure={
             'data': [go.Pie(labels=ge['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
-        }), dcc.Graph(id='pizza-nao-eleitos-grau-instrucao', figure={
+        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-grau-instrucao', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+                    {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                     'legend' : {'orientation' : 'h'}}
                 )
-            })]
+            }), style={'width' : '45%'})], style={'display' : 'flex'})]
+
+    # return [dcc.Graph(id='pizza-eleitos-grau-instrucao', figure={
+    #         'data': [go.Pie(labels=ge['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #         'layout': go.Layout(
+    #             {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #         )
+    #     }), dcc.Graph(id='pizza-nao-eleitos-grau-instrucao', figure={
+    #             'data': [go.Pie(labels=gne['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #             'layout': go.Layout(
+    #                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #             )
+    #         })]
 
 
 
@@ -493,18 +503,29 @@ def pizza_candidatos_ocupacao(eleitos, nao_eleitos):
     ge = eleitos.groupby('DESCRICAO_OCUPACAO').size().reset_index(name='QUANTIDADE')
     gne = nao_eleitos.groupby('DESCRICAO_OCUPACAO').size().reset_index(name='QUANTIDADE')
 
-    return [dcc.Graph(id='pizza-eleitos-ocupacao', figure={
+    return [html.Div([html.Div(dcc.Graph(id='pizza-eleitos-ocupacao', figure={
             'data': [go.Pie(labels=ge['DESCRICAO_OCUPACAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
             )
-        }), dcc.Graph(id='pizza-nao-eleitos-ocupacao', figure={
+        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-ocupacao', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_OCUPACAO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
                 )
-            })]
+            }), style={'width' : '45%'})], style={'display' : 'flex'})]
 
+    # return [dcc.Graph(id='pizza-eleitos-ocupacao', figure={
+    #         'data': [go.Pie(labels=ge['DESCRICAO_OCUPACAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #         'layout': go.Layout(
+    #             {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #         )
+    #     }), dcc.Graph(id='pizza-nao-eleitos-ocupacao', figure={
+    #             'data': [go.Pie(labels=gne['DESCRICAO_OCUPACAO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
+    #             'layout': go.Layout(
+    #                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
+    #             )
+    #         })]
 
 
 def card_eleito(df):
@@ -554,7 +575,8 @@ def pizza_1_turno(df):
     return {
             'data': [go.Pie(labels=nomes, values=votos, hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': '1º Turno', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': '1º Turno', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
 
@@ -569,7 +591,8 @@ def pizza_2_turno(df):
     return {
             'data': [go.Pie(labels=nomes, values=votos, hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': '2º Turno', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': '2º Turno', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
 
@@ -600,7 +623,8 @@ def pizza_sexo(df):
     return {
             'data': [go.Pie(labels=grupo['DESCRICAO_SEXO'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Sexo', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Sexo', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
 
@@ -610,7 +634,8 @@ def pizza_estado_civil(df):
     return {
             'data': [go.Pie(labels=grupo['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Estado Civil', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Estado Civil', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
 
@@ -620,7 +645,8 @@ def pizza_grau_instrucao(df):
     return {
             'data': [go.Pie(labels=grupo['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Instrução', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Instrução', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
 
@@ -630,6 +656,7 @@ def pizza_ocupacao(df):
     return {
             'data': [go.Pie(labels=grupo['DESCRICAO_OCUPACAO'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Ocupação', 'x': 0.50, 'y': 0.5}]}
+                {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Ocupação', 'x': 0.50, 'y': 0.5}],
+                 'legend' : {'orientation' : 'h'}}
             )
         }
