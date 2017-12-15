@@ -7,6 +7,7 @@ import plotly.graph_objs as go
 from cepesp import *
 import numpy
 import locale
+import css
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.utf8')
 
@@ -100,14 +101,14 @@ for i in numpy.arange(2016, 1998, -2):
 layout_pagina = [html.Div([
                            html.H1('Informações Gerais sobre as  Eleições'),
                            html.H3('Neste Dashboard, é possível fazer pesquisas descritivas sobre os cargos em todos os pleitos disponíveis na base de dados da CEPESP.', style={'font-style': 'italic'}),
-                           html.Label('Cargo:', style={'display': 'inline'}),
-                           dcc.Dropdown(id='lista-cargos', options=cargos),
-                           html.Label('Ano:'),
-                           dcc.Dropdown(id='lista-anos'),
-                           html.Label('Estado:'),
-                           dcc.Dropdown(id='lista-ufs', options=ufs),
-                           html.Label('Município:'),
-                           dcc.Dropdown(id='lista-municipios'),
+                           html.Div([html.Label('Cargo:', style={'width': '15%'}),
+                           html.Div(dcc.Dropdown(id='lista-cargos', options=cargos), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
+                           html.Div([html.Label('Ano:', style={'width': '15%'}),
+                           html.Div(dcc.Dropdown(id='lista-anos'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
+                           html.Div([html.Label('Estado:', style={'width': '15%'}),
+                           html.Div(dcc.Dropdown(id='lista-ufs', options=ufs), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
+                           html.Div([html.Label('Município:', style={'width': '15%'}),
+                           html.Div(dcc.Dropdown(id='lista-municipios'), style={'width': '40%'})], style={'display': 'flex', 'align-items': 'center'}),
                            html.Button('Pesquisar', id='botao-pesquisar'),
                            html.Button('Limpar', id='botao-limpar'),
                           ], id='head'),
@@ -161,7 +162,7 @@ def limpa_pesquisa(botao):
     State('lista-municipios', 'value')])
 def atualiza_pesquisa(botao, cargo, ano, uf, municipio):
     if (cargo is None) or (ano is None):
-        return None
+        return []
 
     if (uf is None):
         regional = AGR_REGIONAL.BRASIL
@@ -173,10 +174,15 @@ def atualiza_pesquisa(botao, cargo, ano, uf, municipio):
         else:
             regional = AGR_REGIONAL.MUNICIPIO
 
+    print('cargo:' + str(cargo))
+    print('ano: ' + str(ano))
+    print('uf: ' + uf)
+    print(municipio)
+
     df = votos_x_candidatos(cargo=cargo, ano=ano, agregacao_politica=1, agregacao_regional=regional, estado=estado)
 
     if df.empty:
-        return None
+        return []
 
     if (municipio is None):
         pass
@@ -213,8 +219,10 @@ def atualiza_pesquisa(botao, cargo, ano, uf, municipio):
     del b_n
 
     # se ha mais de um eleito, deve apresentar layout_varios
-    numero_eleitos = len(df[(df['DESC_SIT_TOT_TURNO'] == 'ELEITO') | (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') | (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')])
-
+    numero_eleitos = len(df[(df['DESC_SIT_TOT_TURNO'] == 'ELEITO') |
+                            (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
+                            (df['DESC_SIT_TOT_TURNO'] == 'ELEITO POR MÉDIA')])
+    print('numero de eleitos: ' + str(numero_eleitos))
     if numero_eleitos == 1:
         return preenche_layout_um(df)
     else:
