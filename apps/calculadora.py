@@ -117,7 +117,14 @@ def efetua_calculo(participantes, coligacao):
                                html.Td('-', style=css.tabela['td-num']),
                                html.Td('-', style=css.tabela['td-num']),
                                html.Td('-', style=css.tabela['td-num']),
-                               html.Td('-', style=css.tabela['td-num'])])], style=css.tabela['table'])
+                               html.Td('-', style=css.tabela['td-num'])]),
+                       html.Tr([html.Td('Máximo', style=css.tabela['titulo']),
+                               html.Td('0:12:30', style=css.tabela['titulo']),
+                               html.Td('0:09:00', style=css.tabela['titulo']),
+                               html.Td('0:07:00', style=css.tabela['titulo']),
+                               html.Td('0:12:30', style=css.tabela['titulo']),
+                               html.Td('0:09:00', style=css.tabela['titulo']),
+                               html.Td('1:10:00', style=css.tabela['titulo'])])], style=css.tabela['table'])
 
 
 def calcula_tempo(todos, participantes, coligacao, tempo_disponivel, majoritaria=False):

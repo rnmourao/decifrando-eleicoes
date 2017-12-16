@@ -113,7 +113,9 @@ def card_candidato_capital(candidato):
                               style={'display': 'flex',
                                      'flex-direction': 'column',
                                      'flex-wrap' : 'wrap',
-                                     'padding': '5px'})
+                                     'padding': '5px',
+                                     'border' : '2px solid',
+                                     'margin-bottom' : '5px'})
 
     # dados sobre deputados federais eleitos em 2014
     eleitos = df_14[(df_14['SIGLA_UE'] == uf) & ((df_14['DESC_SIT_TOT_TURNO'] == 'ELEITO POR QP') |
@@ -127,9 +129,8 @@ def card_candidato_capital(candidato):
                            html.H3(menos['NOME_URNA_CANDIDATO'].iloc[0]),
                            html.H3(menos['DESC_SIT_TOT_TURNO'].iloc[0] + ' (' + str(int(menos['QTDE_VOTOS'].iloc[0])) + ' votos)')
                            ], style={'float' : 'left',
-                                     'background-color' : '#d0342e',
-                                     'color' : 'white',
-                                     'height' : '150px',
+                                     'border' : '2px solid #d0342e',
+                                     'padding-left' : '5px',
                                      'width' : '45%'})
 
 
@@ -140,12 +141,11 @@ def card_candidato_capital(candidato):
                            html.H3(mais['NOME_URNA_CANDIDATO'].iloc[0]),
                            html.H3(mais['DESC_SIT_TOT_TURNO'].iloc[0] + ' (' + str(int(mais['QTDE_VOTOS'].iloc[0])) + ' votos)')
                            ], style={'float' : 'right',
-                                     'background-color' : '#2e9d2d',
-                                     'color' : 'white',
-                                     'height' : '150px',
+                                     'border' : '2px solid #2e9d2d',
+                                     'padding-left' : '5px',
                                      'width' : '45%'})
 
-    card_outros = html.Div([card_menos, card_mais], style={'height' : '150px'})
+    card_outros = html.Div([card_menos, card_mais], style={'height' : '200px'})
 
     return html.Div([html.Br(), card_candidato, card_outros])
 
@@ -158,7 +158,7 @@ def pizza_sucesso_capital(uf):
     return dcc.Graph(figure={
             'data': [go.Pie(labels=grupo['RESULTADO_FEDERAL'].values.tolist(), values=grupo['QUANTIDADE'].values.tolist(), hole=0.5)],
             'layout': go.Layout(
-                {'title': 'Taxa de Sucesso no Upgrade para Federal em 2010',
+                {'title': 'Sucesso no Upgrade para Federal em 2010 (' + uf + ')',
                  'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Resultado', 'x': 0.50, 'y': 0.5}]}
             )
         }, id='pizza-sucesso-capital')

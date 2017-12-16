@@ -108,9 +108,9 @@ def preenche_perfil(cpf, visao):
         centis_matiz = centis_matiz[centis_matiz['MATIZ_IDEOLOGICA'] == candidato['MATIZ_IDEOLOGICA'].iloc[0]]
 
     return [ html.Div([card_candidato_perfil(candidato),
-             card_resumo_perfil(candidato)], style={'border' : '2px solid black', 'margin' : '10px'}),
+             card_resumo_perfil(candidato)], style={'border' : '2px solid black', 'margin-bottom' : '10px'}),
              html.Div([card_menos_votado_perfil(candidato, centis_matiz),
-                        card_mais_votado_perfil(candidato, centis_matiz)], style={'display' : 'flex', 'justify-content' : 'space-around'}),
+                        card_mais_votado_perfil(candidato, centis_matiz)], style={'display' : 'flex', 'justify-content' : 'space-between'}),
              pizza_perfil(candidato, centis_matiz),
              barra_resultado_perfil(candidato, centis_matiz),
              tabela_similares_perfil(candidato, centis_matiz)
@@ -290,5 +290,5 @@ def tabela_similares_perfil(candidato, centis):
                                      html.Td(s['QTDE_VOTOS'], style=css.tabela['td-num']),
                                      html.Td(s['DESC_SIT_TOT_TURNO'], style=css.tabela['td'])], style=css.tabela[cor])]
 
-    return html.Div([html.P('Candidatos semelhantes', style=css.div_centralizada),
-                     html.Div(html.Table(dados_similares, style=css.tabela['table']), style=css.div_centralizada)])
+    return html.Div([html.P('Candidatos semelhantes', style=css.titulo),
+                     html.Div(html.Table(dados_similares, style=css.tabela['table']), style=css.div_centralizada)], style={'display' : 'flex', 'flex-direction' : 'column', 'justify-content' : 'center', 'align-items': 'center'})

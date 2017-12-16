@@ -16,40 +16,6 @@ from app import app
 
 print('entrou cargo')
 
-estilo = {
-            'card-pessoas' : {'background': '#6284f7',
-                              'color': '#ffffff',
-                              'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
-                              'transition': '0.3s',
-                              'padding': '2px 16px',
-                            #   'border-spacing': 5px,
-                              'width': '15%',
-                              'display': 'table-cell'                          }, #8ca9f9
-            'card-1-turno' : {'background': '#d92171',
-                              'color': '#ffffff',
-                              'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
-                              'transition': '0.3s',
-                              'padding': '2px 16px',
-                              'width': '15%',
-                              'display': 'table-cell'                         }, #e45d9b
-            'card-2-turno' : {'background': '#f9be05',
-                              'color': '#ffffff',
-                              'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
-                              'transition': '0.3s',
-                              'padding': '5px 16px',
-                              'width': '15%',
-                              'display': 'table-cell'
-                              }, #f5da76
-            'card-custos' : {'background': '#63b82a',
-                              'color': '#ffffff',
-                              'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
-                              'transition': '0.3s',
-                              'padding': '5px 16px',
-                              'width': '15%',
-                              'display': 'table-cell'
-                              } #93cf68
-}
-
 # combos
 cargos = [{'label': 'Presidente', 'value': CARGO.PRESIDENTE},
           {'label': 'Governador', 'value': CARGO.GOVERNADOR},
@@ -232,19 +198,19 @@ def preenche_layout_um(df):
 
     resultado = card_eleito(df_candidatos)
     if resultado:
-        layout.append(html.Div(resultado, id='card-eleito', style=estilo['card-pessoas']))
+        layout.append(html.Div(resultado, id='card-eleito', style=css.cargo['card-pessoas']))
 
     resultado = card_1_turno(df_candidatos)
     if resultado:
-        layout.append(html.Div(resultado, id='card-1-turno', style=estilo['card-1-turno']))
+        layout.append(html.Div(resultado, id='card-1-turno', style=css.cargo['card-1-turno']))
 
     resultado = card_2_turno(df_candidatos)
     if resultado:
-        layout.append(html.Div(resultado, id='card-2-turno', style=estilo['card-2-turno']))
+        layout.append(html.Div(resultado, id='card-2-turno', style=css.cargo['card-2-turno']))
 
     resultado = card_custos(df_candidatos)
     if resultado:
-        layout.append(html.Div(resultado, id='card-custos', style=estilo['card-custos']))
+        layout.append(html.Div(resultado, id='card-custos', style=css.cargo['card-custos']))
 
     resultado = pizza_1_turno(df)
     if resultado:
@@ -310,17 +276,17 @@ def preenche_layout_varios(df):
     # pizza-candidatos-sexo
     resultado = pizza_candidatos_sexo(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div(resultado))
+        layout.append(html.Div([html.P('Sexo', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
 
     # pizza-candidatos-estado-civil
     resultado = pizza_candidatos_estado_civil(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div(resultado))
+        layout.append(html.Div([html.P('Estado Civil', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
 
     # pizza-candidatos-grau-instrucao
     resultado = pizza_candidatos_grau_instrucao(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div(resultado))
+        layout.append(html.Div([html.P('Grau de Instrução', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
 
     # pizza-candidatos-ocupacao
     # resultado = pizza_candidatos_ocupacao(eleitos, nao_eleitos)
@@ -406,13 +372,13 @@ def pizza_candidatos_sexo(eleitos, nao_eleitos):
                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}],
                  'legend' : {'orientation' : 'h'}}
             )
-        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
+        }), style={'height' : '150px'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_SEXO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
-            }), style={'width' : '45%'})], style={'display' : 'flex'})]
+            }), style={'height' : '150px'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
 
     # traco1 = go.Pie(labels=ge['DESCRICAO_SEXO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(),
     #                 hole=0.5,
