@@ -79,7 +79,7 @@ layout_pagina = [html.Div([
                            html.Button('Pesquisar', id='botao-pesquisar'),
                            html.Button('Limpar', id='botao-limpar'),
                           ], id='head'),
-                html.Div(id='cg-body', style={'display': 'flex', 'flex-direction' : 'column')
+                html.Div(id='cg-body', style={'display': 'flex', 'flex-direction' : 'column'})
                ]
 
 layout = html.Div(layout_pagina, id='cg-content')
