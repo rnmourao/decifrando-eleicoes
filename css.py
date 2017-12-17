@@ -55,4 +55,4 @@ checkbox = {'display': 'flex', 'flex-direction' : 'column', 'flex-wrap': 'wrap'}
 
 titulo = {'display' : 'flex', 'font-size' : '20px', 'width' : 'auto'}
 
-grafico_titulo = {'display' : 'flex', 'flex-direction' : 'column', 'justify-content': 'center', 'align-items': 'center'}
+grafico_titulo = {'display' : 'flex', 'flex-direction' : 'column', 'justify-content': 'center', 'align-items': 'center', 'height' : '200px'}
