@@ -372,13 +372,13 @@ def pizza_candidatos_sexo(eleitos, nao_eleitos):
                 {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Eleitos', 'x': 0.50, 'y': 0.5}],
                  'legend' : {'orientation' : 'h'}}
             )
-        }), style={'height' : '150px'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
+        }), style={'width' : '45%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_SEXO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
-            }), style={'height' : '150px'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
+            }), style={'width' : '45%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
 
     # traco1 = go.Pie(labels=ge['DESCRICAO_SEXO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(),
     #                 hole=0.5,
@@ -418,7 +418,7 @@ def pizza_candidatos_estado_civil(eleitos, nao_eleitos):
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
-            }), style={'width' : '45%'})], style={'display' : 'flex'})]
+            }), style={'width' : '45%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
 
     # return [dcc.Graph(id='pizza-eleitos-estado-civil', figure={
     #         'data': [go.Pie(labels=ge['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
@@ -449,7 +449,7 @@ def pizza_candidatos_grau_instrucao(eleitos, nao_eleitos):
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
-            }), style={'width' : '45%'})], style={'display' : 'flex'})]
+            }), style={'width' : '45%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
 
     # return [dcc.Graph(id='pizza-eleitos-grau-instrucao', figure={
     #         'data': [go.Pie(labels=ge['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
@@ -479,7 +479,7 @@ def pizza_candidatos_ocupacao(eleitos, nao_eleitos):
                 'layout': go.Layout(
                     {'annotations': [{'font': {'size': 20}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}]}
                 )
-            }), style={'width' : '45%'})], style={'display' : 'flex'})]
+            }), style={'width' : '45%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
 
     # return [dcc.Graph(id='pizza-eleitos-ocupacao', figure={
     #         'data': [go.Pie(labels=ge['DESCRICAO_OCUPACAO'].values.tolist(), values=ge['QUANTIDADE'].values.tolist(), hole=0.5)],
