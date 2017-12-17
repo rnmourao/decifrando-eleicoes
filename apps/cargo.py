@@ -375,7 +375,7 @@ def pizza_candidatos_sexo(eleitos, nao_eleitos):
         }), style={'width' : '40%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-sexo', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_SEXO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 16}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                    {'annotations': [{'font': {'size': 12}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
             }), style={'width' : '40%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
@@ -415,7 +415,7 @@ def pizza_candidatos_estado_civil(eleitos, nao_eleitos):
         }), style={'width' : '40%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-civil', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_ESTADO_CIVIL'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 16}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                    {'annotations': [{'font': {'size': 12}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
             }), style={'width' : '40%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
@@ -446,7 +446,7 @@ def pizza_candidatos_grau_instrucao(eleitos, nao_eleitos):
         }), style={'width' : '40%'}), html.Div(dcc.Graph(id='pizza-nao-eleitos-grau-instrucao', figure={
                 'data': [go.Pie(labels=gne['DESCRICAO_GRAU_INSTRUCAO'].values.tolist(), values=gne['QUANTIDADE'].values.tolist(), hole=0.5)],
                 'layout': go.Layout(
-                    {'annotations': [{'font': {'size': 16}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
+                    {'annotations': [{'font': {'size': 12}, 'showarrow': False, 'text': 'Não Eleitos', 'x': 0.50, 'y': 0.5}],
                      'legend' : {'orientation' : 'h'}}
                 )
             }), style={'width' : '40%'})], style={'display' : 'flex', 'justify-content' : 'space-between'})]
