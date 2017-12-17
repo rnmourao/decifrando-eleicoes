@@ -276,17 +276,17 @@ def preenche_layout_varios(df):
     # pizza-candidatos-sexo
     resultado = pizza_candidatos_sexo(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div([html.P('Sexo', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
+        layout.append(html.Div([html.P('Sexo', style=css.titulo), html.Div(resultado)]))
 
     # pizza-candidatos-estado-civil
     resultado = pizza_candidatos_estado_civil(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div([html.P('Estado Civil', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
+        layout.append(html.Div([html.P('Estado Civil', style=css.titulo), html.Div(resultado)]))
 
     # pizza-candidatos-grau-instrucao
     resultado = pizza_candidatos_grau_instrucao(eleitos, nao_eleitos)
     if resultado:
-        layout.append(html.Div([html.P('Grau de Instrução', style=css.titulo), html.Div(resultado)], style=css.grafico_titulo))
+        layout.append(html.Div([html.P('Grau de Instrução', style=css.titulo), html.Div(resultado)]))
 
     # pizza-candidatos-ocupacao
     # resultado = pizza_candidatos_ocupacao(eleitos, nao_eleitos)
