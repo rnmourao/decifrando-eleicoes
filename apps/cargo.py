@@ -212,6 +212,8 @@ def preenche_layout_um(df):
     if resultado:
         layout.append(html.Div(resultado, id='card-custos', style=css.cargo['card-custos']))
 
+    layout = [html.Div(layout, style=css.cards)]
+
     resultado = pizza_1_turno(df)
     if resultado:
         layout.append(dcc.Graph(figure=resultado, id='pizza-1-turno'))
