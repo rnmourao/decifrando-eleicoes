@@ -16,7 +16,7 @@ app.layout = html.Div([
             {'label': 'Eficiência dos Partidos', 'value': 'idx-bolhas'},
             {'label': 'Benchmark Eleitoral', 'value': 'idx-perfil'},
             {'label': 'Capital Eleitoral', 'value': 'idx-capital'},
-            {'label': 'Estatísticas Eleitorais', 'value': 'idx-cargo'}
+            # {'label': 'Estatísticas Eleitorais', 'value': 'idx-cargo'}
         ],
         value='idx-calc',
         vertical=True,

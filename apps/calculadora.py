@@ -147,7 +147,10 @@ def calcula_tempo(todos, participantes, coligacao, tempo_disponivel, majoritaria
     for i, p in df_part.iterrows():
         s.append(p['SIGLA_PARTIDO'])
         q.append(p['QUANTIDADE'])
-        t.append(60 * tempo_disponivel * .9 * p['QUANTIDADE'] / float(deputados_eleitos))
+        if deputados_eleitos == 0:
+            t.append(0)
+        else:
+            t.append(60 * tempo_disponivel * .9 * p['QUANTIDADE'] / float(deputados_eleitos))
     df_p90 = pd.DataFrame({'SIGLA_PARTIDO': s, 'QUANTIDADE': q, 'TEMPO': t})
 
     # filtra df_p90 para constar somente partidos da coligacao.
